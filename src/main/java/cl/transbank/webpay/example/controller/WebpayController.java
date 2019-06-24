@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -24,11 +25,12 @@ public class WebpayController {
     }
 
     @RequestMapping(value = "/webpayplus", method = RequestMethod.GET)
-    public ModelAndView webpayplus() {
+    public ModelAndView webpayplus(HttpServletRequest request) {
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         double amount = 1000;
-        String returnUrl = "http://localhost:8081/webpayplus-end";
+        String returnUrl = request.getRequestURL().append("-end").toString();
+        log.info(returnUrl);
 
         Map<String, Object> details = new HashMap<>();
         details.put("buyOrder", buyOrder);

@@ -1,13 +1,16 @@
 package cl.transbank.webpay.example.controller;
 
+import cl.transbank.webpay.exception.TransactionCommitException;
 import cl.transbank.webpay.exception.TransactionCreateException;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
+import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusTransactionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +51,25 @@ public class WebpayController {
         }
 
         return new ModelAndView("webpayplus", "details", details);
+    }
+
+    @RequestMapping(value = "/webpayplus-end", method = RequestMethod.POST)
+    public ModelAndView webpayplusEnd(@RequestParam("token_ws") String tokenWs) {
+        log.info(String.format("token_ws : %s", tokenWs));
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", tokenWs);
+
+        try {
+            final CommitWebpayPlusTransactionResponse response = WebpayPlus.Transaction.commit(tokenWs);
+            log.debug(String.format("response : %s", response));
+            details.put("response", response);
+        } catch (TransactionCommitException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return error();
+        }
+
+        return new ModelAndView("webpayplus-end", "details", details);
     }
 
     @RequestMapping(value = "/error", method = RequestMethod.GET)

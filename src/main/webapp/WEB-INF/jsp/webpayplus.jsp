@@ -8,7 +8,7 @@
 <body>
 <h1>Ejemplos Webpay Plus - Transaccion Normal</h1>
 
-<h2>Step: Init</h2>
+<h2>Step: Create Transaction</h2>
 
 <div style="background-color:lightyellow;">
     <h3>request</h3>

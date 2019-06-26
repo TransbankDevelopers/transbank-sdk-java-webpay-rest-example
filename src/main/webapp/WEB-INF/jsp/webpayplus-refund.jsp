@@ -23,8 +23,8 @@
     [authorization_date] = ${details.get("response").getAuthorizationDate()},
     [nullified_amount] = ${details.get("response").getNullifiedAmount()}
 </div>
-<p><samp>Reembolso realizado con exito.</samp></p>
 <br>
+<p><samp>Reembolso realizado con exito.</samp></p>
 <br>
 <a href=".">&laquo; volver a index</a>
 </body>

@@ -20,7 +20,7 @@
     <h3>result</h3>
     [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
 </div>
-
+<br>
 <p><samp>Sesion iniciada con exito en Webpay</samp></p>
 <br>
 <form action="${details.get("url")}" method="POST">

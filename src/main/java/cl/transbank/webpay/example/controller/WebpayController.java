@@ -2,9 +2,11 @@ package cl.transbank.webpay.example.controller;
 
 import cl.transbank.webpay.exception.TransactionCommitException;
 import cl.transbank.webpay.exception.TransactionCreateException;
+import cl.transbank.webpay.exception.TransactionRefundException;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -72,8 +74,31 @@ public class WebpayController {
         return new ModelAndView("webpayplus-end", "details", details);
     }
 
+    @RequestMapping(value = "/webpayplus-refund", method = RequestMethod.POST)
+    public ModelAndView webpayplusRefund(
+            @RequestParam("token_ws") String tokenWs,
+            @RequestParam("amount") double amount) {
+        log.info(String.format("token_ws : %s | amount : %s", tokenWs, amount));
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", tokenWs);
+
+        try {
+            final RefundWebpayPlusTransactionResponse response = WebpayPlus.Transaction.refund(tokenWs, amount);
+            log.info(response.toString());
+            log.debug(String.format("response : %s", response));
+            details.put("response", response);
+        } catch (TransactionRefundException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return error();
+        }
+
+        return new ModelAndView("webpayplus-refund", "details", details);
+    }
+
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     public ModelAndView error() {
+        log.info("Error controller");
         return new ModelAndView("error");
     }
 }

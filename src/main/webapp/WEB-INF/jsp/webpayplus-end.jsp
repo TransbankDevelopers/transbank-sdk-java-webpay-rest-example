@@ -3,9 +3,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Ejemplos Webpay - Transacci&oacute;n Normal</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="container">
 <h1>Ejemplos Webpay - Transacci&oacute;n Normal</h1>
 <h2>Step: Commit Transaction</h2>
 <div style="background-color:lightyellow;">
@@ -23,6 +25,11 @@
 </div>
 <p><samp>Pago ACEPTADO por webpay</samp></p>
 <br>
+<form action="/webpayplus-refund" method="POST">
+    <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
+    <input type="hidden" name="amount" value="${details.get("response").getAmount()}">
+    <input type="submit" value="Reenbolsar Transacci&oacute;n (Anular)">
+</form>
 <a href=".">&laquo; volver a index</a>
 </body>
 </html>

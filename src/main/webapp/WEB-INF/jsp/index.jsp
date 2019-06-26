@@ -1,12 +1,14 @@
 <html>
 <head>
     <title>Ejemplo integraci&oacute;n Webpay Rest</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="container">
 <h1>Ejemplos Webpay</h1>
 
-<table border="0" style="width:70%">
+<table border="0" style="margin-top: 50px">
     <tr>
         <td><h3>Transacci&oacute;n Simple</h3></td>
         <td><h3><a href="/webpayplus">Webpay Plus Normal</a></h3></td>

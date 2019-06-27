@@ -2,33 +2,30 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Ejemplos Webpay Plus - Transaccion Normal</title>
+    <title>Ejemplos Webpay - Transacci&oacute;n Normal</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body class="container">
-<h1>Ejemplos Webpay Plus - Transaccion Normal</h1>
-
-<h2>Step: Create Transaction</h2>
-
+<h1>Ejemplos Webpay - Transacci&oacute;n Normal</h1>
+<h2>Step: Refund</h2>
 <div style="background-color:lightyellow;">
     <h3>request</h3>
-    [amount] = ${details.get("amount")}, [buy_order] = ${details.get("buyOrder")}, [session_id] = ${details.get("sessionId")}, [return_url] = ${details.get("returnUrl")}
+    [token_ws] = ${details.get("token_ws")}
 </div>
 <div style="background-color:lightgrey;">
     <h3>result</h3>
-    [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
+    [type] = ${details.get("response").getType()},
+    [balance] = ${details.get("response").getBalance()},
+    [authorization_code] = ${details.get("response").getAuthorizationCode()},
+    [response_code] = ${details.get("response").getResponseCode()},
+    [authorization_date] = ${details.get("response").getAuthorizationDate()},
+    [nullified_amount] = ${details.get("response").getNullifiedAmount()}
 </div>
 <br>
-<p><samp>Sesion iniciada con exito en Webpay</samp></p>
+<p><samp>Reembolso realizado con exito.</samp></p>
 <br>
-<form action="${details.get("url")}" method="POST">
-    <input type="hidden" name="token_ws" value="${details.get("token")}">
-    <input type="submit" value="Ejecutar Pago con Webpay">
-</form>
-<br>
-
 <a href=".">&laquo; volver a index</a>
 </body>
 </html>

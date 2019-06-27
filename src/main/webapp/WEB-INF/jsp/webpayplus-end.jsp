@@ -28,7 +28,7 @@
 <form action="/webpayplus-refund" method="POST">
     <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
     <input type="hidden" name="amount" value="${details.get("response").getAmount()}">
-    <input type="submit" value="Reenbolsar Transacci&oacute;n (Anular)">
+    <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
 </form>
 <a href=".">&laquo; volver a index</a>
 </body>

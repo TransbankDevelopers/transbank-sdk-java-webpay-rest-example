@@ -25,11 +25,31 @@
 </div>
 <p><samp>Pago ACEPTADO por webpay</samp></p>
 <br>
-<form action="${details.get("refund-endpoint")}" method="POST">
-    <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
-    <input type="hidden" name="amount" value="${details.get("response").getAmount()}">
-    <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
-</form>
+<label>
+    <table border="0">
+        <tbody>
+        <tr>
+            <td>
+                <form action="/webpayplusdeferred-capture" method="post">
+                    <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
+                    <input type="hidden" name="authorization_code" value="${details.get("response").getAuthorizationCode()}">
+                    <input type="hidden" name="buy_order" value="${details.get("response").getBuyOrder()}">
+                    Capturar monto: <input type="text" name="capture_amount"/> <input type="submit" value="Capturar"/>
+                </form>
+            </td>
+            <td> || </td>
+            <td>
+                <form action="${details.get("refund-endpoint")}" method="post">
+                    <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
+                    <input type="hidden" name="amount" value="${details.get("response").getAmount()}">
+                    <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</label>
+<br>
 <a href=".">&laquo; volver a index</a>
 </body>
 </html>

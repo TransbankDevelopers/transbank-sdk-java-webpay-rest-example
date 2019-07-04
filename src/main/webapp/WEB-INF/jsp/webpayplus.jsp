@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Ejemplos Webpay Plus - Transaccion Normal</title>
+    <title>Ejemplos Webpay Plus - Crear Transaccion</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body class="container">
-<h1>Ejemplos Webpay Plus - Transaccion Normal</h1>
+<h1>Ejemplos Webpay Plus - Crear Transaccion</h1>
 
 <h2>Step: Create Transaction</h2>
 

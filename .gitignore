@@ -9,4 +9,3 @@ dependency-reduced-pom.xml
 .settings/
 .vscode
 Test.java
-src/main/java/cl/transbank/webpay/example/controller/borrar

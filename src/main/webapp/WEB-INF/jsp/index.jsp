@@ -10,22 +10,29 @@
 
 <table border="0" style="margin-top: 50px">
     <tr>
-        <td><h3>Transacci&oacute;n Simple</h3></td>
-        <td><h3><a href="/webpayplus">Webpay Plus Normal</a></h3></td>
-        <td><h3><a href="tbk-nullify-normal.jsp">Webpay Plus Normal Anulaci&oacute;n </a></h3></td>
+        <td><h3>Webpay Plus</h3></td>
+        <td><h3><a href="/webpayplus">Crear Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/webpayplus-refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/transaction-status-request">Consultar Estado Transacci&oacute;n</a></h3></td>
     </tr>
+    <tr>
+        <td><h3>Webpay Plus Mall</h3></td>
+        <td><h3><a href="/webpayplusmall">Crear Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/webpayplusmall-refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/transaction-status-request">Consultar Estado Transacci&oacute;n</a></h3></td>
+    </tr>
+    <tr>
+        <td><h3>Webpay Plus Captura Diferida</h3></td>
+        <td><h3><a href="/webpayplusdeferred">Crear Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/webpayplusdeferred-refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/transaction-status-request">Consultar Estado Transacci&oacute;n</a></h3></td>
+    </tr>
+    <!--
     <tr>
         <td><h3>Transacci&oacute;n Mall</h3></td>
         <td><h3><a href="tbk-mall-normal.jsp">Webpay Plus Mall</a></h3></td>
         <td><h3><a href="tbk-nullify-mall-normal.jsp">Webpay Plus Mall Anulaci&oacute;n </a></h3></td>
     </tr>
-    <!--
-      <tr>
-        <td><h3>Transacci&oacute;n Completa</h3></td>
-        <td><h3><a href="certificates/cert-complete.jsp">Webpay Completa</a></h3></td>
-        <td><h3><a href="certificates/cert-nullify-complete.jsp">Webpay Completa Anulaci&oacute;n </a></h3></td>
-      </tr>
-    -->
     <tr>
         <td><h3>Transacci&oacute;n Captura Diferida</h3></td>
         <td><h3><a href="tbk-normal-capture.jsp">Webpay Plus Captura Diferida</a></h3></td>
@@ -36,6 +43,7 @@
         <td><h3><a href="tbk-oneclick.jsp">Webpay OneClick Normal</a></h3></td>
         <td><h3> - </h3></td>
     </tr>
+    -->
 </table>
 </body>
 </html>

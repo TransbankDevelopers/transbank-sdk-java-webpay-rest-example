@@ -1,10 +1,10 @@
 package cl.transbank.webpay.example.controller;
 
 import cl.transbank.webpay.Options;
-import cl.transbank.webpay.exception.TransactionCaptureException;
-import cl.transbank.webpay.exception.TransactionCommitException;
-import cl.transbank.webpay.exception.TransactionCreateException;
-import cl.transbank.webpay.exception.TransactionRefundException;
+import cl.transbank.webpay.exception.CaptureTransactionException;
+import cl.transbank.webpay.exception.CommitTransactionException;
+import cl.transbank.webpay.exception.CreateTransactionException;
+import cl.transbank.webpay.exception.RefundTransactionException;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.model.CaptureWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Random;
 
 @Controller
-public class WebpayController {
-    private static Logger log = LoggerFactory.getLogger(WebpayController.class);
+public class WebpayPlusController {
+    private static Logger log = LoggerFactory.getLogger(WebpayPlusController.class);
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView index() {
@@ -52,9 +52,9 @@ public class WebpayController {
             final CreateWebpayPlusTransactionResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl, options);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (TransactionCreateException e) {
+        } catch (CreateTransactionException e) {
             log.error(e.getLocalizedMessage(), e);
-            return error();
+            return new ErrorController().error();
         }
 
         return new ModelAndView("webpayplus", "details", details);
@@ -76,9 +76,9 @@ public class WebpayController {
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (TransactionCommitException e) {
+        } catch (CommitTransactionException e) {
             log.error(e.getLocalizedMessage(), e);
-            return error();
+            return new ErrorController().error();
         }
 
         return new ModelAndView(isDeferred ? "webpayplusdeferred-commit" : "webpayplus-end", "details", details);
@@ -101,9 +101,9 @@ public class WebpayController {
             log.info(response.toString());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
-        } catch (TransactionRefundException e) {
+        } catch (RefundTransactionException e) {
             log.error(e.getLocalizedMessage(), e);
-            return error();
+            return new ErrorController().error();
         }
 
         return new ModelAndView("webpayplus-refund", "details", details);
@@ -136,15 +136,9 @@ public class WebpayController {
             details.put("authorization_code", authorizationCode);
             details.put("capture_amount", String.valueOf(amount));
             return new ModelAndView("webpayplusdeferred-end", "details", details);
-        } catch (TransactionCaptureException e) {
+        } catch (CaptureTransactionException e) {
             log.error(e.getLocalizedMessage(), e);
-            return error();
+            return new ErrorController().error();
         }
-    }
-
-    @RequestMapping(value = "/error", method = RequestMethod.GET)
-    public ModelAndView error() {
-        log.info("Error controller");
-        return new ModelAndView("error");
     }
 }

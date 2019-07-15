@@ -22,9 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
 
 @Controller
-public class WebpayPlusController {
+public class WebpayPlusController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(WebpayPlusController.class);
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -32,7 +33,7 @@ public class WebpayPlusController {
         return new ModelAndView("index");
     }
 
-    @RequestMapping(value = {"/webpayplus", "/webpayplusdeferred"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/webpayplus", method = RequestMethod.GET)
     public ModelAndView webpayplus(HttpServletRequest request) {
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
@@ -46,10 +47,7 @@ public class WebpayPlusController {
         details.put("returnUrl", returnUrl);
 
         try {
-            // if request if for deferred capture then set the credentials for deferred, in other case use credentials for Webpay Plus
-            Options options = request.getRequestURL().toString().endsWith("webpayplusdeferred") ?
-                    WebpayPlus.buildOptionsForTestingWebpayPlusDeferredCapture() : WebpayPlus.buildOptionsForTestingWebpayPlusNormal();
-            final CreateWebpayPlusTransactionResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl, options);
+            final CreateWebpayPlusTransactionResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
         } catch (CreateTransactionException e) {
@@ -60,19 +58,15 @@ public class WebpayPlusController {
         return new ModelAndView("webpayplus", "details", details);
     }
 
-    @RequestMapping(value = {"/webpayplus-end", "webpayplusdeferred-end"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/webpayplus-end"}, method = RequestMethod.POST)
     public ModelAndView webpayplusEnd(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
         log.info(String.format("token_ws : %s", tokenWs));
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
 
-        final boolean isDeferred = request.getRequestURL().toString().endsWith("webpayplusdeferred-end");
-
         try {
-            // if request if for deferred capture then set the credentials for deferred, in other case use credentials for Webpay Plus
-            Options options = isDeferred ? WebpayPlus.buildOptionsForTestingWebpayPlusDeferredCapture() : WebpayPlus.buildOptionsForTestingWebpayPlusNormal();
-            final CommitWebpayPlusTransactionResponse response = WebpayPlus.Transaction.commit(tokenWs, options);
+            final CommitWebpayPlusTransactionResponse response = WebpayPlus.Transaction.commit(tokenWs);
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
@@ -81,23 +75,22 @@ public class WebpayPlusController {
             return new ErrorController().error();
         }
 
-        return new ModelAndView(isDeferred ? "webpayplusdeferred-commit" : "webpayplus-end", "details", details);
+        return new ModelAndView("webpayplus-end", "details", details);
     }
 
-    @RequestMapping(value = {"/webpayplus-refund", "webpayplusdeferred-refund"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/webpayplus-refund", method = RequestMethod.POST)
     public ModelAndView webpayplusRefund(@RequestParam("token_ws") String tokenWs,
                                          @RequestParam("amount") double amount,
                                          HttpServletRequest request) {
+        prepareLoger(Level.ALL);
+
         log.info(String.format("token_ws : %s | amount : %s", tokenWs, amount));
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
 
         try {
-            // if request if for deferred capture then set the credentials for deferred, in other case use credentials for Webpay Plus
-            Options options = request.getRequestURL().toString().endsWith("webpayplusdeferred-refund") ?
-                    WebpayPlus.buildOptionsForTestingWebpayPlusDeferredCapture() : WebpayPlus.buildOptionsForTestingWebpayPlusNormal();
-            final RefundWebpayPlusTransactionResponse response = WebpayPlus.Transaction.refund(tokenWs, amount, options);
+            final RefundWebpayPlusTransactionResponse response = WebpayPlus.Transaction.refund(tokenWs, amount);
             log.info(response.toString());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
@@ -126,7 +119,7 @@ public class WebpayPlusController {
                                                   @RequestParam("capture_amount") double amount,
                                                   HttpServletRequest request) {
         try {
-            final CaptureWebpayPlusTransactionResponse response = WebpayPlus.Transaction.capture(tokenWs, buyOrder, authorizationCode, amount);
+            final CaptureWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.capture(tokenWs, buyOrder, authorizationCode, amount);
             log.info(response.toString());
 
             Map<String, Object> details = new HashMap<>();

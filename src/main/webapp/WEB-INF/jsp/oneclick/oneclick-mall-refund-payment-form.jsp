@@ -27,16 +27,13 @@
 <br>
 <form action="/oneclick-mall/refund" method="post">
     <input type="hidden" name="buy_order" value="${model.buyOrder}">
-    <input type="hidden" name="child_one_commerce_code" value="${model.childOneCommerceCode}">
-    <input type="hidden" name="child_two_commerce_code" value="${model.childTwoCommerceCode}">
-    <input type="hidden" name="child_one_buy_order" value="${model.chileOneBuyOrder}">
-    <input type="hidden" name="child_two_buy_order" value="${model.chileTwoBuyOrder}">
-    <input type="hidden" name="amount_mall_one" value="${model.amountMallOne}">
-    <input type="hidden" name="amount_mall_two" value="${model.amountMallTwo}">
+    <input type="hidden" name="child_commerce_code" value="${model.childOneCommerceCode}">
+    <input type="hidden" name="child_buy_order" value="${model.chileOneBuyOrder}">
+    <input type="hidden" name="amount" value="${model.amountMallOne}">
     <input type="submit" value="Refund Oneclick Mall Payment">
 </form>
 <br>
 
-<a href=".">&laquo; Back Index</a>
+<a href="/">&laquo; Back Index</a>
 </body>
 </html>

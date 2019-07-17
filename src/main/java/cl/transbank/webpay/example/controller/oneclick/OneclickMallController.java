@@ -147,45 +147,40 @@ public class OneclickMallController extends BaseController {
 
     @RequestMapping(value = "/refund", method = RequestMethod.POST)
     public ModelAndView refund(@RequestParam("buy_order") String buyOrder,
-                               @RequestParam("child_one_commerce_code") String childOneCommerceCode,
-                               @RequestParam("child_two_commerce_code") String childTwoCommerceCode,
-                               @RequestParam("child_one_buy_order") String chileOneBuyOrder,
-                               @RequestParam("child_two_buy_order") String chileTwoBuyOrder,
-                               @RequestParam("amount_mall_one") double amountMallOne,
-                               @RequestParam("amount_mall_two") double amountMallTwo) {
+                               @RequestParam("child_commerce_code") String childCommerceCode,
+                               @RequestParam("child_buy_order") String childBuyOrder,
+                               @RequestParam("amount") double amount) {
         logger.info("OneclickMall.Transaction.refund");
         logger.info(String.format("buy_order : %s", buyOrder));
-        logger.info(String.format("child_one_commerce_code : %s", childOneCommerceCode));
-        logger.info(String.format("child_two_commerce_code : %s", childTwoCommerceCode));
-        logger.info(String.format("child_one_buy_order : %s", chileOneBuyOrder));
-        logger.info(String.format("child_two_buy_order : %s", chileTwoBuyOrder));
-        logger.info(String.format("amount_mall_one : %s", amountMallOne));
-        logger.info(String.format("amount_mall_two : %s", amountMallTwo));
+        logger.info(String.format("child_commerce_code : %s", childCommerceCode));
+        logger.info(String.format("child_buy_order : %s", buyOrder));
+        logger.info(String.format("amount : %s", amount));
 
         // clean model
         cleanModel();
 
         // add request to storage in order to send them to the view
         addRequest("buy_order", buyOrder);
-        addRequest("child_one_commerce_code", childOneCommerceCode);
-        addRequest("child_two_commerce_code", childTwoCommerceCode);
-        addRequest("child_one_buy_order", chileOneBuyOrder);
-        addRequest("child_two_buy_order", chileTwoBuyOrder);
-        addRequest("amount_mall_one", amountMallOne);
-        addRequest("amount_mall_two", amountMallTwo);
+        addRequest("child_commerce_code", childCommerceCode);
+        addRequest("child_buy_order", childBuyOrder);
+        addRequest("amount", amount);
 
         try {
-            final RefundOneclickMallTransactionResponse response = OneclickMall.Transaction.refund(buyOrder, childOneCommerceCode, chileOneBuyOrder, amountMallOne);
+            final RefundOneclickMallTransactionResponse response = OneclickMall.Transaction.refund(buyOrder, childCommerceCode, childBuyOrder, amount);
             logger.info(String.format("response : %s", response));
-            OneclickMall.Transaction.refund(buyOrder, childTwoCommerceCode, chileTwoBuyOrder, amountMallTwo);
 
             if (null != response) {
-                addModel("response", response);
+                addModel("response", String.format("response : %s", response));
             }
         } catch (RefundTransactionException e) {
             e.printStackTrace();
         }
 
-        return new ModelAndView("oneclick/oneclick-mall-show-status-form", "model", getModel());
+        return new ModelAndView("oneclick/oneclick-mall-end", "model", getModel());
+    }
+
+    @RequestMapping(value = "/refund-form", method = RequestMethod.GET)
+    public ModelAndView refundForm(HttpServletRequest request) {
+        return new ModelAndView("oneclick/oneclick-mall-refund-form", "model", getModel());
     }
 }

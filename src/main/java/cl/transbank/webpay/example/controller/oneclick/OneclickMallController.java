@@ -5,6 +5,7 @@ import cl.transbank.webpay.exception.AuthorizeTransactionException;
 import cl.transbank.webpay.exception.FinishInscriptionException;
 import cl.transbank.webpay.exception.RefundTransactionException;
 import cl.transbank.webpay.exception.StartInscriptionException;
+import cl.transbank.webpay.exception.StatusTransactionException;
 import cl.transbank.webpay.oneclick.OneclickMall;
 import cl.transbank.webpay.oneclick.model.*;
 import lombok.AccessLevel;
@@ -182,5 +183,28 @@ public class OneclickMallController extends BaseController {
     @RequestMapping(value = "/refund-form", method = RequestMethod.GET)
     public ModelAndView refundForm(HttpServletRequest request) {
         return new ModelAndView("oneclick/oneclick-mall-refund-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/status-form", method = RequestMethod.GET)
+    public ModelAndView statusForm(HttpServletRequest request){
+        return new ModelAndView("oneclick/oneclick-mall-status-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/status", method = RequestMethod.POST)
+    public ModelAndView statusRequest(@RequestParam("buy_order") String buyOrder){
+        logger.info("OneclickMall.Transaction.status");
+        logger.info(String.format("buy_order : %s", buyOrder));
+        addRequest("buy_order", buyOrder);
+        try {
+            final StatusOneclickMallTransactionResponse response = OneclickMall.Transaction.status(buyOrder);
+            if (null != response) {
+                String message = String.format("response : %s", response);
+                logger.info(message);
+                addModel("response", message);
+            }
+        } catch (StatusTransactionException e) {
+            e.printStackTrace();
+        }
+        return new ModelAndView("oneclick/oneclick-mall-status-request", "model", getModel());
     }
 }

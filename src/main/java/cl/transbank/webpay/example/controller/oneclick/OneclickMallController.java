@@ -10,6 +10,8 @@ import cl.transbank.webpay.oneclick.OneclickMall;
 import cl.transbank.webpay.oneclick.model.*;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,7 @@ public class OneclickMallController extends BaseController {
 
     @Getter(AccessLevel.PRIVATE) private String username = "goncafa";
     @Getter(AccessLevel.PRIVATE) private String email = "gonzalo.castillo@continuum.cl";
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE) private String userTbkToken;
     @Getter(AccessLevel.PRIVATE) private String mallOneCommerceCode = "597055555542";
     @Getter(AccessLevel.PRIVATE) private String mallTwoCommerceCode = "597055555543";
 
@@ -75,6 +78,7 @@ public class OneclickMallController extends BaseController {
     public ModelAndView finish(@RequestParam("TBK_TOKEN") String token) {
         logger.info("OneclickMall.Inscription.finish");
         logger.info(String.format("TBK_TOKEN : %s", token));
+        setUserTbkToken(token);
 
         // clean model
         cleanModel();
@@ -194,6 +198,9 @@ public class OneclickMallController extends BaseController {
     public ModelAndView statusRequest(@RequestParam("buy_order") String buyOrder){
         logger.info("OneclickMall.Transaction.status");
         logger.info(String.format("buy_order : %s", buyOrder));
+
+        cleanModel();
+
         addRequest("buy_order", buyOrder);
         try {
             final StatusOneclickMallTransactionResponse response = OneclickMall.Transaction.status(buyOrder);
@@ -206,5 +213,25 @@ public class OneclickMallController extends BaseController {
             e.printStackTrace();
         }
         return new ModelAndView("oneclick/oneclick-mall-status-request", "model", getModel());
+    }
+
+    @RequestMapping(value = "/inscription-delete", method = RequestMethod.GET)
+    public ModelAndView inscriptionDelete(){
+        logger.info("OneclickMall.Inscription.delete");
+        logger.info(String.format("username : %s", getUsername()));
+        logger.info(String.format("tbk_token : %s", getUserTbkToken()));
+
+        cleanModel();
+
+        addRequest("username", getUsername());
+        addRequest("tbk_token", getUserTbkToken());
+
+        try {
+            OneclickMall.Inscription.delete(getUsername(), getUserTbkToken());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+        }
+
+        return new ModelAndView("oneclick/oneclick-mall-inscription-delete", "model", getModel());
     }
 }

@@ -5,10 +5,13 @@ import cl.transbank.webpay.exception.AuthorizeTransactionException;
 import cl.transbank.webpay.exception.FinishInscriptionException;
 import cl.transbank.webpay.exception.RefundTransactionException;
 import cl.transbank.webpay.exception.StartInscriptionException;
+import cl.transbank.webpay.exception.StatusTransactionException;
 import cl.transbank.webpay.oneclick.OneclickMall;
 import cl.transbank.webpay.oneclick.model.*;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -28,6 +31,7 @@ public class OneclickMallController extends BaseController {
 
     @Getter(AccessLevel.PRIVATE) private String username = "goncafa";
     @Getter(AccessLevel.PRIVATE) private String email = "gonzalo.castillo@continuum.cl";
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE) private String userTbkToken;
     @Getter(AccessLevel.PRIVATE) private String mallOneCommerceCode = "597055555542";
     @Getter(AccessLevel.PRIVATE) private String mallTwoCommerceCode = "597055555543";
 
@@ -74,6 +78,7 @@ public class OneclickMallController extends BaseController {
     public ModelAndView finish(@RequestParam("TBK_TOKEN") String token) {
         logger.info("OneclickMall.Inscription.finish");
         logger.info(String.format("TBK_TOKEN : %s", token));
+        setUserTbkToken(token);
 
         // clean model
         cleanModel();
@@ -147,45 +152,86 @@ public class OneclickMallController extends BaseController {
 
     @RequestMapping(value = "/refund", method = RequestMethod.POST)
     public ModelAndView refund(@RequestParam("buy_order") String buyOrder,
-                               @RequestParam("child_one_commerce_code") String childOneCommerceCode,
-                               @RequestParam("child_two_commerce_code") String childTwoCommerceCode,
-                               @RequestParam("child_one_buy_order") String chileOneBuyOrder,
-                               @RequestParam("child_two_buy_order") String chileTwoBuyOrder,
-                               @RequestParam("amount_mall_one") double amountMallOne,
-                               @RequestParam("amount_mall_two") double amountMallTwo) {
+                               @RequestParam("child_commerce_code") String childCommerceCode,
+                               @RequestParam("child_buy_order") String childBuyOrder,
+                               @RequestParam("amount") double amount) {
         logger.info("OneclickMall.Transaction.refund");
         logger.info(String.format("buy_order : %s", buyOrder));
-        logger.info(String.format("child_one_commerce_code : %s", childOneCommerceCode));
-        logger.info(String.format("child_two_commerce_code : %s", childTwoCommerceCode));
-        logger.info(String.format("child_one_buy_order : %s", chileOneBuyOrder));
-        logger.info(String.format("child_two_buy_order : %s", chileTwoBuyOrder));
-        logger.info(String.format("amount_mall_one : %s", amountMallOne));
-        logger.info(String.format("amount_mall_two : %s", amountMallTwo));
+        logger.info(String.format("child_commerce_code : %s", childCommerceCode));
+        logger.info(String.format("child_buy_order : %s", buyOrder));
+        logger.info(String.format("amount : %s", amount));
 
         // clean model
         cleanModel();
 
         // add request to storage in order to send them to the view
         addRequest("buy_order", buyOrder);
-        addRequest("child_one_commerce_code", childOneCommerceCode);
-        addRequest("child_two_commerce_code", childTwoCommerceCode);
-        addRequest("child_one_buy_order", chileOneBuyOrder);
-        addRequest("child_two_buy_order", chileTwoBuyOrder);
-        addRequest("amount_mall_one", amountMallOne);
-        addRequest("amount_mall_two", amountMallTwo);
+        addRequest("child_commerce_code", childCommerceCode);
+        addRequest("child_buy_order", childBuyOrder);
+        addRequest("amount", amount);
 
         try {
-            final RefundOneclickMallTransactionResponse response = OneclickMall.Transaction.refund(buyOrder, childOneCommerceCode, chileOneBuyOrder, amountMallOne);
+            final RefundOneclickMallTransactionResponse response = OneclickMall.Transaction.refund(buyOrder, childCommerceCode, childBuyOrder, amount);
             logger.info(String.format("response : %s", response));
-            OneclickMall.Transaction.refund(buyOrder, childTwoCommerceCode, chileTwoBuyOrder, amountMallTwo);
 
             if (null != response) {
-                addModel("response", response);
+                addModel("response", String.format("response : %s", response));
             }
         } catch (RefundTransactionException e) {
             e.printStackTrace();
         }
 
-        return new ModelAndView("oneclick/oneclick-mall-show-status-form", "model", getModel());
+        return new ModelAndView("oneclick/oneclick-mall-end", "model", getModel());
+    }
+
+    @RequestMapping(value = "/refund-form", method = RequestMethod.GET)
+    public ModelAndView refundForm(HttpServletRequest request) {
+        return new ModelAndView("oneclick/oneclick-mall-refund-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/status-form", method = RequestMethod.GET)
+    public ModelAndView statusForm(HttpServletRequest request){
+        return new ModelAndView("oneclick/oneclick-mall-status-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/status", method = RequestMethod.POST)
+    public ModelAndView statusRequest(@RequestParam("buy_order") String buyOrder){
+        logger.info("OneclickMall.Transaction.status");
+        logger.info(String.format("buy_order : %s", buyOrder));
+
+        cleanModel();
+
+        addRequest("buy_order", buyOrder);
+        try {
+            final StatusOneclickMallTransactionResponse response = OneclickMall.Transaction.status(buyOrder);
+            if (null != response) {
+                String message = String.format("response : %s", response);
+                logger.info(message);
+                addModel("response", message);
+            }
+        } catch (StatusTransactionException e) {
+            e.printStackTrace();
+        }
+        return new ModelAndView("oneclick/oneclick-mall-status-request", "model", getModel());
+    }
+
+    @RequestMapping(value = "/inscription-delete", method = RequestMethod.GET)
+    public ModelAndView inscriptionDelete(){
+        logger.info("OneclickMall.Inscription.delete");
+        logger.info(String.format("username : %s", getUsername()));
+        logger.info(String.format("tbk_token : %s", getUserTbkToken()));
+
+        cleanModel();
+
+        addRequest("username", getUsername());
+        addRequest("tbk_token", getUserTbkToken());
+
+        try {
+            OneclickMall.Inscription.delete(getUsername(), getUserTbkToken());
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+        }
+
+        return new ModelAndView("oneclick/oneclick-mall-inscription-delete", "model", getModel());
     }
 }

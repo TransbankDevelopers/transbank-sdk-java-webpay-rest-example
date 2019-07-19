@@ -33,6 +33,6 @@
 </form>
 <br>
 
-<a href=".">&laquo; Back Index</a>
+<a href="/">&laquo; Back Index</a>
 </body>
 </html>

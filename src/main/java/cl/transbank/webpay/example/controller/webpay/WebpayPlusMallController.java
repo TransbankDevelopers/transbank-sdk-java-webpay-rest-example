@@ -1,6 +1,6 @@
-package cl.transbank.webpay.example.controller;
+package cl.transbank.webpay.example.controller.webpay;
 
-import cl.transbank.webpay.Options;
+import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.CommitTransactionException;
 import cl.transbank.webpay.exception.CreateTransactionException;
 import cl.transbank.webpay.exception.RefundTransactionException;

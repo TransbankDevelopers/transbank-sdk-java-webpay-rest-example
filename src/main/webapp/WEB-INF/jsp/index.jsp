@@ -30,13 +30,15 @@
 
     <tr>
         <td><h3>Oneclick Mall</h3></td>
-        <td><h3><a href="/oneclick-mall/start">Start Inscription</a></h3></td>
+        <td><h3><a href="/oneclick-mall/start">Comenzar Inscripci&oacute;n</a></h3></td>
+        <td><h3><a href="/oneclick-mall/refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/oneclick-mall/status-form">Consultar Estado Transacci&oacute;n</a></h3></td>
     </tr>
 
-    <tr>
+    <%-- <tr>
         <td><h3>Oneclick Mall Deferred Capture</h3></td>
         <td><h3><a href="/oneclick-mall-deferred/start">Start Inscription</a></h3></td>
-    </tr>
+    </tr> --%>
     <!--
     <tr>
         <td><h3>Transacci&oacute;n Mall</h3></td>

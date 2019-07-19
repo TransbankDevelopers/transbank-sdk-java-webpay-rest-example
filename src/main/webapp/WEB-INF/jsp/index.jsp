@@ -13,19 +13,19 @@
         <td><h3>Webpay Plus</h3></td>
         <td><h3><a href="/webpayplus">Crear Transacci&oacute;n</a></h3></td>
         <td><h3><a href="/webpayplus-refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
-        <td><h3><a href="/transaction-status-request">Consultar Estado Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/webpayplus-status-form">Consultar Estado Transacci&oacute;n</a></h3></td>
     </tr>
     <tr>
         <td><h3>Webpay Plus Mall</h3></td>
         <td><h3><a href="/webpayplusmall">Crear Transacci&oacute;n</a></h3></td>
         <td><h3><a href="/webpayplusmall-refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
-        <td><h3><a href="/transaction-status-request">Consultar Estado Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/webpayplusmall-status-form">Consultar Estado Transacci&oacute;n</a></h3></td>
     </tr>
     <tr>
         <td><h3>Webpay Plus Captura Diferida</h3></td>
         <td><h3><a href="/webpayplusdeferred">Crear Transacci&oacute;n</a></h3></td>
         <td><h3><a href="/webpayplusdeferred-refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
-        <td><h3><a href="/transaction-status-request">Consultar Estado Transacci&oacute;n</a></h3></td>
+        <td><h3><a href="/webpayplusdeferred-status-form">Consultar Estado Transacci&oacute;n</a></h3></td>
     </tr>
 
     <tr>

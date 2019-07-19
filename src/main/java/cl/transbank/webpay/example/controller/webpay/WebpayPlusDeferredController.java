@@ -1,5 +1,6 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.CommitTransactionException;
 import cl.transbank.webpay.exception.CreateTransactionException;
@@ -8,6 +9,8 @@ import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,7 +27,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
 @Controller
-public class WebpayPlusDeferredController {
+public class WebpayPlusDeferredController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(WebpayPlusDeferredController.class);
 
     @RequestMapping(value = "/webpayplusdeferred", method = RequestMethod.GET)
@@ -100,5 +103,20 @@ public class WebpayPlusDeferredController {
         }
 
         return new ModelAndView("webpayplus-refund", "details", details);
+    }
+
+    @RequestMapping(value = "/webpayplusdeferred-status", method = RequestMethod.POST)
+    public ModelAndView webpayplusDeferredStatus(@RequestParam("token_ws") String token){
+        cleanModel();
+        addRequest("token_ws", token);
+
+        try {
+            final StatusWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.status(token);
+            addModel("response", response);
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+        return new ModelAndView("webpayplus-status", "model", getModel());
     }
 }

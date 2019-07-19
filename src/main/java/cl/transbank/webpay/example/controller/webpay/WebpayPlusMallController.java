@@ -9,6 +9,7 @@ import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusMallTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.CreateMallTransactionDetails;
 import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusMallTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusMallTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusMallTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
@@ -95,6 +96,9 @@ public class WebpayPlusMallController extends BaseController {
                 amount += detail.getAmount();
             }
             details.put("amount", amount);
+            details.put("child_commerce_code", response.getDetails().get(0).getCommerceCode());
+            details.put("child_buy_order", response.getDetails().get(0).getBuyOrder());
+            details.put("child_amount", response.getDetails().get(0).getAmount());
 
             log.debug(String.format("response : %s", response));
             details.put("response", response);
@@ -107,34 +111,37 @@ public class WebpayPlusMallController extends BaseController {
         return new ModelAndView("webpayplusmall-commit", "details", details);
     }
 
-    @RequestMapping(value = "/webpayplusmall-refund", method = RequestMethod.POST)
-    public ModelAndView webpayplusRefund(@RequestParam("token_ws") String tokenWs,
-                                         @RequestParam("amount") double amount,
-                                         HttpServletRequest request) {
-        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
-        java.util.logging.Logger globalLog = java.util.logging.Logger.getLogger("cl.transbank");
-        globalLog.setUseParentHandlers(false);
-        globalLog.addHandler(new ConsoleHandler() {
-            {/*setOutputStream(System.out);*/setLevel(Level.ALL);}
-        });
-        globalLog.setLevel(Level.ALL);
-
-        log.info(String.format("token_ws : %s | amount : %s", tokenWs, amount));
+    @RequestMapping(value = "/webpayplusmall-refund-form", method = RequestMethod.GET)
+    public ModelAndView webpayplusRefundForm(HttpServletRequest request) {
+        String refundEndpoint = "/webpayplusmall-refund";
 
         Map<String, Object> details = new HashMap<>();
-        details.put("token_ws", tokenWs);
+        details.put("refund-endpoint", refundEndpoint);
+        return new ModelAndView("webpayplusmall-refund-form", "details", details);
+    }
+
+    @RequestMapping(value = "/webpayplusmall-refund", method = RequestMethod.POST)
+    public ModelAndView webpayplusRefund(@RequestParam("token_ws") String token,
+                                         @RequestParam("child_commerce_code") String childCommerceCode,
+                                         @RequestParam("child_buy_order") String childBuyOrder,
+                                         @RequestParam("amount") double amount) {
+
+        cleanModel();
+        addRequest("token_ws", token);
+        addRequest("child_commerce_code", childCommerceCode);
+        addRequest("child_buy_order", childBuyOrder);
+        addRequest("amount", amount);
 
         try {
-            final RefundWebpayPlusTransactionResponse response = WebpayPlus.Transaction.refund(tokenWs, amount);
-            log.info(response.toString());
-            log.debug(String.format("response : %s", response));
-            details.put("response", response);
+            final RefundWebpayPlusMallTransactionResponse response = 
+                WebpayPlus.MallTransaction.refund(token, childBuyOrder, childCommerceCode, amount);
+            addModel("response", response);
         } catch (RefundTransactionException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
 
-        return new ModelAndView("webpayplus-refund", "details", details);
+        return new ModelAndView("webpayplusmall-refund", "model", getModel());
     }
 
     @RequestMapping(value = "/webpayplusmall-status", method = RequestMethod.POST)

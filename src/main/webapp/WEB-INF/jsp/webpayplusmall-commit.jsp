@@ -24,9 +24,9 @@
 <br>
 <form action="/webpayplusmall-refund" method="POST">
     <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
-    <input type="hidden" name="amount" value="${details.get("amount")}">
-    <input type="hidden" name="buy_order" value="${details.get("amount")}">
-    <input type="hidden" name="commerce_code" value="${details.get("amount")}">
+    <input type="hidden" name="child_buy_order" value="${details.get("child_buy_order")}">
+    <input type="hidden" name="child_commerce_code" value="${details.get("child_commerce_code")}">
+    <input type="hidden" name="amount" value="${details.get("child_amount")}">
     <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
 </form>
 <a href=".">&laquo; volver a index</a>

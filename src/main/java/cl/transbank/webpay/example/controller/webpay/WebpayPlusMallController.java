@@ -1,5 +1,6 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.CommitTransactionException;
 import cl.transbank.webpay.exception.CreateTransactionException;
@@ -9,6 +10,9 @@ import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusMallTransactionRespo
 import cl.transbank.webpay.webpayplus.model.CreateMallTransactionDetails;
 import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusMallTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusMallTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -25,7 +29,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
 @Controller
-public class WebpayPlusMallController {
+public class WebpayPlusMallController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(WebpayPlusMallController.class);
 
     @RequestMapping(value = "/webpayplusmall", method = RequestMethod.GET)
@@ -131,5 +135,20 @@ public class WebpayPlusMallController {
         }
 
         return new ModelAndView("webpayplus-refund", "details", details);
+    }
+
+    @RequestMapping(value = "/webpayplusmall-status", method = RequestMethod.POST)
+    public ModelAndView webpayplusDeferredStatus(@RequestParam("token_ws") String token){
+        cleanModel();
+        addRequest("token_ws", token);
+
+        try {
+            final StatusWebpayPlusMallTransactionResponse response = WebpayPlus.MallTransaction.status(token);
+            addModel("response", response);
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+        return new ModelAndView("webpayplus-status", "model", getModel());
     }
 }

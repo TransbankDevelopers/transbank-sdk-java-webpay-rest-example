@@ -11,6 +11,8 @@ import cl.transbank.webpay.webpayplus.model.CaptureWebpayPlusTransactionResponse
 import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusTransactionResponse;
 import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -134,5 +136,26 @@ public class WebpayPlusController extends BaseController {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
+    }
+
+    @RequestMapping(value = {"/webpayplus-status-form","/webpayplusmall-status-form", "/webpayplusdeferred-status-form"}, method = RequestMethod.GET)
+    public ModelAndView webpayplusStatusForm(HttpServletRequest request){
+        String endpoint = request.getRequestURL().toString().replace("-form", "");
+        addModel("endpoint", endpoint);
+        return new ModelAndView("webpayplus-status-form", "model", getModel());
+    }
+
+    @RequestMapping(value= "/webpayplus-status", method = RequestMethod.POST)
+    public ModelAndView webpayplusStatus(@RequestParam("token_ws") String token){
+        cleanModel();
+        addRequest("token_ws", token);
+        try {
+            final StatusWebpayPlusTransactionResponse response = WebpayPlus.Transaction.status(token);
+            addModel("response", response);
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+        return new ModelAndView("webpayplus-status", "model", getModel());
     }
 }

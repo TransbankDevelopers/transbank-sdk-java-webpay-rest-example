@@ -1,10 +1,10 @@
 package cl.transbank.webpay.example.controller.oneclick;
 
 import cl.transbank.webpay.example.controller.BaseController;
-import cl.transbank.webpay.exception.AuthorizeTransactionException;
-import cl.transbank.webpay.exception.FinishInscriptionException;
-import cl.transbank.webpay.exception.RefundTransactionException;
-import cl.transbank.webpay.exception.StartInscriptionException;
+import cl.transbank.webpay.exception.InscriptionFinishException;
+import cl.transbank.webpay.exception.InscriptionStartException;
+import cl.transbank.webpay.exception.TransactionAuthorizeException;
+import cl.transbank.webpay.exception.TransactionRefundException;
 import cl.transbank.webpay.oneclick.OneclickMall;
 import cl.transbank.webpay.oneclick.OneclickMallDeferred;
 import cl.transbank.webpay.oneclick.model.*;
@@ -53,7 +53,7 @@ public class OneclickMallDeferredController extends BaseController {
 
         try {
             // call the SDK
-            final StartOneclickMallInscriptionResponse response = OneclickMallDeferred.Inscription.start(getUsername(), getEmail(), responseUrl);
+            final OneclickMallInscriptionStartResponse response = OneclickMallDeferred.Inscription.start(getUsername(), getEmail(), responseUrl);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -64,7 +64,7 @@ public class OneclickMallDeferredController extends BaseController {
                 addModel("tbk_token", response.getToken());
                 addModel("url_webpay", response.getUrlWebpay());
             }
-        } catch (StartInscriptionException e) {
+        }catch (InscriptionStartException e) {
             e.printStackTrace();
         }
 
@@ -83,7 +83,7 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("token", token);
 
         try {
-            final FinishOneclickMallInscriptionResponse response = OneclickMallDeferred.Inscription.finish(token);
+            final OneclickMallInscriptionFinishResponse response = OneclickMallDeferred.Inscription.finish(token);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -93,7 +93,7 @@ public class OneclickMallDeferredController extends BaseController {
                 addModel("tbk_user", response.getTbkUser());
                 addModel("username", getUsername());
             }
-        } catch (FinishInscriptionException e) {
+        }catch (InscriptionFinishException e) {
             e.printStackTrace();
         }
 
@@ -114,7 +114,7 @@ public class OneclickMallDeferredController extends BaseController {
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        CreateMallTransactionDetails details = CreateMallTransactionDetails.build()
+        MallTransactionCreateDetails details = MallTransactionCreateDetails.build()
                 .add(amount, getMallOneCommerceCode(), buyOrderMallOne, (byte) 1)
                 .add(amount, getMallTwoCommerceCode(), buyOrderMallTwo, (byte) 1);
 
@@ -125,7 +125,7 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("details", details);
 
         try {
-            final AuthorizeOneclickMallTransactionResponse response = OneclickMall.Transaction.authorize(username, tbkUser, buyOrder, details);
+            final OneclickMallTransactionAuthorizeResponse response = OneclickMall.Transaction.authorize(username, tbkUser, buyOrder, details);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -139,7 +139,7 @@ public class OneclickMallDeferredController extends BaseController {
                 addModel("amountMallOne", amount);
                 addModel("amountMallTwo", amount);
             }
-        } catch (AuthorizeTransactionException e) {
+        }catch (TransactionAuthorizeException e) {
             e.printStackTrace();
         }
 
@@ -176,14 +176,14 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("amount_mall_two", amountMallTwo);
 
         try {
-            final RefundOneclickMallTransactionResponse response = OneclickMall.Transaction.refund(buyOrder, childOneCommerceCode, chileOneBuyOrder, amountMallOne);
+            final OneclickMallTransactionRefundResponse response = OneclickMall.Transaction.refund(buyOrder, childOneCommerceCode, chileOneBuyOrder, amountMallOne);
             logger.info(String.format("response : %s", response));
             OneclickMall.Transaction.refund(buyOrder, childTwoCommerceCode, chileTwoBuyOrder, amountMallTwo);
 
             if (null != response) {
                 addModel("response", response);
             }
-        } catch (RefundTransactionException e) {
+        }catch (TransactionRefundException e) {
             e.printStackTrace();
         }
 

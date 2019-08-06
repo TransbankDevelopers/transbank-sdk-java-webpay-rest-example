@@ -2,15 +2,15 @@ package cl.transbank.webpay.example.controller.webpay;
 
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.CommitTransactionException;
-import cl.transbank.webpay.exception.CreateTransactionException;
-import cl.transbank.webpay.exception.RefundTransactionException;
+import cl.transbank.webpay.exception.TransactionCommitException;
+import cl.transbank.webpay.exception.TransactionCreateException;
+import cl.transbank.webpay.exception.TransactionRefundException;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
-import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
 
+import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionCommitResponse;
+import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionCreateResponse;
+import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionRefundResponse;
+import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -44,10 +44,10 @@ public class WebpayPlusDeferredController extends BaseController {
         details.put("returnUrl", returnUrl);
 
         try {
-            final CreateWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.create(buyOrder, sessionId, amount, returnUrl);
+            final WebpayPlusTransactionCreateResponse response = WebpayPlus.DeferredTransaction.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (CreateTransactionException e) {
+        } catch (TransactionCreateException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -63,11 +63,11 @@ public class WebpayPlusDeferredController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final CommitWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.commit(tokenWs);
+            final WebpayPlusTransactionCommitResponse response = WebpayPlus.DeferredTransaction.commit(tokenWs);
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (CommitTransactionException e) {
+        } catch (TransactionCommitException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -93,11 +93,11 @@ public class WebpayPlusDeferredController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final RefundWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.refund(tokenWs, amount);
+            final WebpayPlusTransactionRefundResponse response = WebpayPlus.DeferredTransaction.refund(tokenWs, amount);
             log.info(response.toString());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
-        } catch (RefundTransactionException e) {
+        } catch (TransactionRefundException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -111,7 +111,7 @@ public class WebpayPlusDeferredController extends BaseController {
         addRequest("token_ws", token);
 
         try {
-            final StatusWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.status(token);
+            final WebpayPlusTransactionStatusResponse response = WebpayPlus.DeferredTransaction.status(token);
             addModel("response", response);
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);

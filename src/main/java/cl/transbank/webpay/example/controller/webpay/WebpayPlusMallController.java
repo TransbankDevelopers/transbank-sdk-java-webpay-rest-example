@@ -2,17 +2,12 @@ package cl.transbank.webpay.example.controller.webpay;
 
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.CommitTransactionException;
-import cl.transbank.webpay.exception.CreateTransactionException;
-import cl.transbank.webpay.exception.RefundTransactionException;
+import cl.transbank.webpay.exception.TransactionCommitException;
+import cl.transbank.webpay.exception.TransactionCreateException;
+import cl.transbank.webpay.exception.TransactionRefundException;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
-import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusMallTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.CreateMallTransactionDetails;
-import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusMallTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusMallTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusMallTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
+import cl.transbank.webpay.webpayplus.model.*;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +49,7 @@ public class WebpayPlusMallController extends BaseController {
 
         String mallOneCommerceCode = "597055555536";
         String mallTwoCommerceCode = "597055555537";
-        final CreateMallTransactionDetails mallDetails = CreateMallTransactionDetails.build()
+        final MallTransactionCreateDetails mallDetails = MallTransactionCreateDetails.build()
                 .add(amountMallOne, mallOneCommerceCode, buyOrderMallOne)
                 .add(amountMallTwo, mallTwoCommerceCode, buyOrderMallTwo);
 
@@ -68,12 +63,12 @@ public class WebpayPlusMallController extends BaseController {
         details.put("returnUrl", returnUrl);
 
         try {
-            final CreateWebpayPlusMallTransactionResponse response = WebpayPlus.MallTransaction.create(
+            final WebpayPlusMallTransactionCreateResponse response = WebpayPlus.MallTransaction.create(
                     buyOrder, sessionId, returnUrl, mallDetails);
 
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (CreateTransactionException e) {
+        } catch (TransactionCreateException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -89,10 +84,10 @@ public class WebpayPlusMallController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final CommitWebpayPlusMallTransactionResponse response = WebpayPlus.MallTransaction.commit(tokenWs);
+            final WebpayPlusMallTransactionCommitResponse response = WebpayPlus.MallTransaction.commit(tokenWs);
 
             double amount = 0;
-            for (CommitWebpayPlusMallTransactionResponse.Detail detail : response.getDetails()) {
+            for (WebpayPlusMallTransactionCommitResponse.Detail detail : response.getDetails()) {
                 amount += detail.getAmount();
             }
             details.put("amount", amount);
@@ -103,7 +98,7 @@ public class WebpayPlusMallController extends BaseController {
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-commit", "-refund"));
-        } catch (CommitTransactionException e) {
+        } catch (TransactionCommitException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -133,10 +128,10 @@ public class WebpayPlusMallController extends BaseController {
         addRequest("amount", amount);
 
         try {
-            final RefundWebpayPlusMallTransactionResponse response = 
+            final WebpayPlusMallTransactionRefundResponse response =
                 WebpayPlus.MallTransaction.refund(token, childBuyOrder, childCommerceCode, amount);
             addModel("response", response);
-        } catch (RefundTransactionException e) {
+        } catch (TransactionRefundException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -150,7 +145,7 @@ public class WebpayPlusMallController extends BaseController {
         addRequest("token_ws", token);
 
         try {
-            final StatusWebpayPlusMallTransactionResponse response = WebpayPlus.MallTransaction.status(token);
+            final WebpayPlusMallTransactionStatusResponse response = WebpayPlus.MallTransaction.status(token);
             addModel("response", response);
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);

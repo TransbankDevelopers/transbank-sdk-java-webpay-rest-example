@@ -1,17 +1,12 @@
 package cl.transbank.webpay.example.controller.oneclick;
 
 import cl.transbank.webpay.example.controller.BaseController;
-import cl.transbank.webpay.exception.AuthorizeTransactionException;
-import cl.transbank.webpay.exception.FinishInscriptionException;
-import cl.transbank.webpay.exception.RefundTransactionException;
-import cl.transbank.webpay.exception.StartInscriptionException;
-import cl.transbank.webpay.exception.StatusTransactionException;
+import cl.transbank.webpay.exception.*;
 import cl.transbank.webpay.oneclick.OneclickMall;
 import cl.transbank.webpay.oneclick.model.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -56,7 +51,7 @@ public class OneclickMallController extends BaseController {
 
         try {
             // call the SDK
-            final StartOneclickMallInscriptionResponse response = OneclickMall.Inscription.start(getUsername(), getEmail(), responseUrl);
+            final OneclickMallInscriptionStartResponse response = OneclickMall.Inscription.start(getUsername(), getEmail(), responseUrl);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -67,7 +62,7 @@ public class OneclickMallController extends BaseController {
                 addModel("tbk_token", response.getToken());
                 addModel("url_webpay", response.getUrlWebpay());
             }
-        } catch (StartInscriptionException e) {
+        }  catch (InscriptionStartException e) {
             e.printStackTrace();
         }
 
@@ -87,7 +82,7 @@ public class OneclickMallController extends BaseController {
         addRequest("token", token);
 
         try {
-            final FinishOneclickMallInscriptionResponse response = OneclickMall.Inscription.finish(token);
+            final OneclickMallInscriptionFinishResponse response = OneclickMall.Inscription.finish(token);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -97,7 +92,7 @@ public class OneclickMallController extends BaseController {
                 addModel("tbk_user", response.getTbkUser());
                 addModel("username", getUsername());
             }
-        } catch (FinishInscriptionException e) {
+        } catch (InscriptionFinishException e) {
             e.printStackTrace();
         }
 
@@ -118,7 +113,7 @@ public class OneclickMallController extends BaseController {
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        CreateMallTransactionDetails details = CreateMallTransactionDetails.build()
+        MallTransactionCreateDetails details = MallTransactionCreateDetails.build()
                 .add(amount, getMallOneCommerceCode(), buyOrderMallOne, (byte) 1)
                 .add(amount, getMallTwoCommerceCode(), buyOrderMallTwo, (byte) 1);
 
@@ -129,7 +124,7 @@ public class OneclickMallController extends BaseController {
         addRequest("details", details);
 
         try {
-            final AuthorizeOneclickMallTransactionResponse response = OneclickMall.Transaction.authorize(username, tbkUser, buyOrder, details);
+            final OneclickMallTransactionAuthorizeResponse response = OneclickMall.Transaction.authorize(username, tbkUser, buyOrder, details);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -143,7 +138,7 @@ public class OneclickMallController extends BaseController {
                 addModel("amountMallOne", amount);
                 addModel("amountMallTwo", amount);
             }
-        } catch (AuthorizeTransactionException e) {
+        } catch (TransactionAuthorizeException e) {
             e.printStackTrace();
         }
 
@@ -171,13 +166,13 @@ public class OneclickMallController extends BaseController {
         addRequest("amount", amount);
 
         try {
-            final RefundOneclickMallTransactionResponse response = OneclickMall.Transaction.refund(buyOrder, childCommerceCode, childBuyOrder, amount);
+            final OneclickMallTransactionRefundResponse response = OneclickMall.Transaction.refund(buyOrder, childCommerceCode, childBuyOrder, amount);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
                 addModel("response", String.format("response : %s", response));
             }
-        } catch (RefundTransactionException e) {
+        } catch (TransactionRefundException e) {
             e.printStackTrace();
         }
 
@@ -203,13 +198,13 @@ public class OneclickMallController extends BaseController {
 
         addRequest("buy_order", buyOrder);
         try {
-            final StatusOneclickMallTransactionResponse response = OneclickMall.Transaction.status(buyOrder);
+            final OneclickMallTransactionStatusResponse response = OneclickMall.Transaction.status(buyOrder);
             if (null != response) {
                 String message = String.format("response : %s", response);
                 logger.info(message);
                 addModel("response", message);
             }
-        } catch (StatusTransactionException e) {
+        }catch (TransactionStatusException e) {
             e.printStackTrace();
         }
         return new ModelAndView("oneclick/oneclick-mall-status-request", "model", getModel());

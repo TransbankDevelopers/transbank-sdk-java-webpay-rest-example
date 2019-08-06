@@ -2,17 +2,12 @@ package cl.transbank.webpay.example.controller.webpay;
 
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.CaptureTransactionException;
-import cl.transbank.webpay.exception.CommitTransactionException;
-import cl.transbank.webpay.exception.CreateTransactionException;
-import cl.transbank.webpay.exception.RefundTransactionException;
+import cl.transbank.webpay.exception.TransactionCaptureException;
+import cl.transbank.webpay.exception.TransactionCommitException;
+import cl.transbank.webpay.exception.TransactionCreateException;
+import cl.transbank.webpay.exception.TransactionRefundException;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
-import cl.transbank.webpay.webpayplus.model.CaptureWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.CommitWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.CreateWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.RefundWebpayPlusTransactionResponse;
-import cl.transbank.webpay.webpayplus.model.StatusWebpayPlusTransactionResponse;
-
+import cl.transbank.webpay.webpayplus.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +44,10 @@ public class WebpayPlusController extends BaseController {
         details.put("returnUrl", returnUrl);
 
         try {
-            final CreateWebpayPlusTransactionResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl);
+            final WebpayPlusTransactionCreateResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (CreateTransactionException e) {
+        } catch (TransactionCreateException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -69,11 +63,11 @@ public class WebpayPlusController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final CommitWebpayPlusTransactionResponse response = WebpayPlus.Transaction.commit(tokenWs);
+            final WebpayPlusTransactionCommitResponse response = WebpayPlus.Transaction.commit(tokenWs);
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (CommitTransactionException e) {
+        } catch (TransactionCommitException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -93,11 +87,11 @@ public class WebpayPlusController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final RefundWebpayPlusTransactionResponse response = WebpayPlus.Transaction.refund(tokenWs, amount);
+            final WebpayPlusTransactionRefundResponse response = WebpayPlus.Transaction.refund(tokenWs, amount);
             log.info(response.toString());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
-        } catch (RefundTransactionException e) {
+        } catch (TransactionRefundException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -122,7 +116,7 @@ public class WebpayPlusController extends BaseController {
                                                   @RequestParam("capture_amount") double amount,
                                                   HttpServletRequest request) {
         try {
-            final CaptureWebpayPlusTransactionResponse response = WebpayPlus.DeferredTransaction.capture(tokenWs, buyOrder, authorizationCode, amount);
+            final WebpayPlusTransactionCaptureResponse response = WebpayPlus.DeferredTransaction.capture(tokenWs, buyOrder, authorizationCode, amount);
             log.info(response.toString());
 
             Map<String, Object> details = new HashMap<>();
@@ -132,7 +126,7 @@ public class WebpayPlusController extends BaseController {
             details.put("authorization_code", authorizationCode);
             details.put("capture_amount", String.valueOf(amount));
             return new ModelAndView("webpayplusdeferred-end", "details", details);
-        } catch (CaptureTransactionException e) {
+        } catch (TransactionCaptureException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -150,7 +144,7 @@ public class WebpayPlusController extends BaseController {
         cleanModel();
         addRequest("token_ws", token);
         try {
-            final StatusWebpayPlusTransactionResponse response = WebpayPlus.Transaction.status(token);
+            final WebpayPlusTransactionStatusResponse response = WebpayPlus.Transaction.status(token);
             addModel("response", response);
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);

@@ -8,7 +8,7 @@
 <body class="container">
 <h1>Ejemplos Webpay</h1>
 
-<table border="0" style="margin-top: 50px">
+<table class="table table-dark" border="0" style="margin-top: 50px">
     <tr>
         <td><h3>Webpay Plus</h3></td>
         <td><h3><a href="/webpayplus">Crear Transacci&oacute;n</a></h3></td>
@@ -38,6 +38,13 @@
     <tr>
     <td><h3>Transacci&oacute;n Completa</h3></td>
     <td><h3><a href="/fulltransaction">Crear Transacci&oacute;n</a></h3></td>
+    </tr>
+
+    <tr>
+    <td><h3>Patpass-webpay</h3></td>
+    <td><h3><a href="/patpass-webpay/create">Crear Transacci&oacute;n</a></h3></td>
+    <td><h3><a href="/patpass-webpay/refund-form">Reembolsar Transacci&oacute;n</a></h3></td>
+    <td><h3><a href="/patpass-webpay/status-form">Consultar Estado Transacci&oacute;n</a></h3></td>
     </tr>
     <%-- <tr>
         <td><h3>Oneclick Mall Deferred Capture</h3></td>

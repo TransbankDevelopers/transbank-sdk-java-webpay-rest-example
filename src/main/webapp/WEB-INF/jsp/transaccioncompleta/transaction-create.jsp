@@ -23,6 +23,6 @@
      [token_ws] = ${details.get("token")}
 </div>
 
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
 </body>
 </html>

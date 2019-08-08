@@ -21,8 +21,15 @@
         </div>
         <br>
             <br>
-
-                <p><samp>Reembolso realizado con exito.</samp></p>
+                    <c:set var="val" value="${model.response.responseCode}"/>
+                    <c:choose>
+                            <c:when test="${val == '0'}">
+                                    <p><samp>Reembolso realizado con exito.</samp></p>
+                            </c:when>
+                            <c:otherwise>
+                                    <p><samp>upss. el reembolso no se pudo llevar a cabo</samp></p>
+                            </c:otherwise>
+                    </c:choose>
 
             <br>
         <br>

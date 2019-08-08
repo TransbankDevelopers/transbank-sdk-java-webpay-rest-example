@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -62,7 +63,7 @@ public class OneclickMallController extends BaseController {
                 addModel("tbk_token", response.getToken());
                 addModel("url_webpay", response.getUrlWebpay());
             }
-        }  catch (InscriptionStartException e) {
+        }  catch (InscriptionStartException | IOException e) {
             e.printStackTrace();
         }
 
@@ -92,7 +93,7 @@ public class OneclickMallController extends BaseController {
                 addModel("tbk_user", response.getTbkUser());
                 addModel("username", getUsername());
             }
-        } catch (InscriptionFinishException e) {
+        } catch (InscriptionFinishException | IOException e) {
             e.printStackTrace();
         }
 
@@ -138,7 +139,7 @@ public class OneclickMallController extends BaseController {
                 addModel("amountMallOne", amount);
                 addModel("amountMallTwo", amount);
             }
-        } catch (TransactionAuthorizeException e) {
+        } catch (TransactionAuthorizeException | IOException e) {
             e.printStackTrace();
         }
 
@@ -172,7 +173,7 @@ public class OneclickMallController extends BaseController {
             if (null != response) {
                 addModel("response", String.format("response : %s", response));
             }
-        } catch (TransactionRefundException e) {
+        } catch (TransactionRefundException | IOException e) {
             e.printStackTrace();
         }
 
@@ -204,7 +205,7 @@ public class OneclickMallController extends BaseController {
                 logger.info(message);
                 addModel("response", message);
             }
-        }catch (TransactionStatusException e) {
+        }catch (TransactionStatusException | IOException e) {
             e.printStackTrace();
         }
         return new ModelAndView("oneclick/oneclick-mall-status-request", "model", getModel());

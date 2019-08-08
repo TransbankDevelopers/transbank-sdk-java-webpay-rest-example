@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -72,7 +73,7 @@ public class PatpassByWebpayController extends BaseController {
                     cardHolderLastName1, cardHolderLastName2, cardHolderMail, cellphoneNumber, expirationDate, commerceMail, false, null);
             details.put("token", response.getToken());
             details.put("url", response.getUrl());
-        } catch (TransactionCreateException e) {
+        } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -93,7 +94,7 @@ public class PatpassByWebpayController extends BaseController {
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
-        } catch (TransactionCommitException e) {
+        } catch (TransactionCommitException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -113,7 +114,7 @@ public class PatpassByWebpayController extends BaseController {
         try {
             final PatpassByWebpayTransactionRefundResponse response = PatpassByWebpay.Transaction.refund(token, 10);
             addModel("response", response);
-        } catch (TransactionRefundException e) {
+        } catch (TransactionRefundException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }

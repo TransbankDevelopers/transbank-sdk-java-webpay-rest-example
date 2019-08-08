@@ -20,13 +20,7 @@
                 [<c:out value="${detail.key}"/>] = <c:out value="${detail.value}"/>,
             </c:forEach>
             </div>
-            <p><samp>Pago ACEPTADO por webpay</samp></p>
-            <br>
-                <form action="/patpass-webpay/refund" method="POST">
-                    <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
-                    <input type="hidden" name="amount" value="${details.get("amount")}">
-                    <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
-                </form>
+
             <a href="/">&laquo; volver a index</a>
         </body>
     </html>

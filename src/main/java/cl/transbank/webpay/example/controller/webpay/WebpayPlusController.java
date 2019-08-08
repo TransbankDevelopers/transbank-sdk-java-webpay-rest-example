@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -47,7 +48,7 @@ public class WebpayPlusController extends BaseController {
             final WebpayPlusTransactionCreateResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (TransactionCreateException e) {
+        } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -126,7 +127,7 @@ public class WebpayPlusController extends BaseController {
             details.put("authorization_code", authorizationCode);
             details.put("capture_amount", String.valueOf(amount));
             return new ModelAndView("webpayplusdeferred-end", "details", details);
-        } catch (TransactionCaptureException e) {
+        } catch (TransactionCaptureException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }

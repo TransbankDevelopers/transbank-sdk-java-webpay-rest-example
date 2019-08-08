@@ -1,13 +1,14 @@
 package cl.transbank.webpay.example.controller.transaccioncompleta;
 
-import cl.transbank.patpass.PatpassByWebpay;
-import cl.transbank.patpass.model.PatpassByWebpayTransactionCommitResponse;
 import cl.transbank.transaccioncompleta.FullTransaction;
+import cl.transbank.transaccioncompleta.model.FullTransactionCommitResponse;
 import cl.transbank.transaccioncompleta.model.FullTransactionCreateResponse;
+import cl.transbank.transaccioncompleta.model.FullTransactionInstallmentResponse;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCommitException;
 import cl.transbank.webpay.exception.TransactionCreateException;
+import cl.transbank.webpay.exception.TransactionInstallmentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -57,7 +59,7 @@ public class FullTransactionController extends BaseController {
         try {
             FullTransactionCreateResponse response = FullTransaction.Transaction.create(buyOrder, sessionId, amount, cardNumber, cardExpirationDate, cvv);
             details.put("token", response.getToken());
-        } catch (TransactionCreateException e) {
+        } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -65,26 +67,53 @@ public class FullTransactionController extends BaseController {
         return new ModelAndView("transaccioncompleta/transaction-create", "details", details);
     }
 
-   /* @RequestMapping(value = {"/commit"}, method = RequestMethod.POST)
-    public ModelAndView commit(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
+    @RequestMapping(value = {"/commit"}, method = RequestMethod.POST)
+    public ModelAndView commit(@RequestParam("token") String tokenWs, HttpServletRequest request,
+                               @RequestParam("idQueryInstallments") Long idQueryInstallments) {
         log.info(String.format("token_ws : %s", tokenWs));
+
+        byte deferredPeriodIndex= 1;
+        Boolean gracePeriod = false;
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
+        details.put("deferred_period_index", deferredPeriodIndex);
+        details.put("grace_period", gracePeriod);
 
         try {
-            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs);
+            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs,idQueryInstallments,deferredPeriodIndex,gracePeriod);
 
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
-        } catch (TransactionCommitException e) {
+        } catch (TransactionCommitException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
 
-        return new ModelAndView("transaccioncompleta/transaction-create", "details", details);
-    }*/
+        return new ModelAndView("transaccioncompleta/transaction-commit", "details", details);
+    }
+
+    @RequestMapping(value = "/installments", method = RequestMethod.POST)
+    public ModelAndView refund(@RequestParam("token") String token,
+                               @RequestParam("installmentsNumber") byte installmentsNumber) {
+
+        cleanModel();
+        addRequest("token", token);
+        addRequest("installmentsNumber", installmentsNumber);
+        System.out.println("Installments Number:"+installmentsNumber);
+
+        try {
+            final FullTransactionInstallmentResponse response = FullTransaction.Transaction.installment(token, installmentsNumber);
+            addModel("response", response);
+            addModel("token", token);
+        } catch ( IOException | TransactionInstallmentException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/transaction-installments", "model", getModel());
+    }
 
 }
 

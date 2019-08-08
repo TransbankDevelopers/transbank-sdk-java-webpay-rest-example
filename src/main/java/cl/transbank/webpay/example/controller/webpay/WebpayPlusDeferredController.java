@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -47,7 +48,7 @@ public class WebpayPlusDeferredController extends BaseController {
             final WebpayPlusTransactionCreateResponse response = WebpayPlus.DeferredTransaction.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (TransactionCreateException e) {
+        } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -67,7 +68,7 @@ public class WebpayPlusDeferredController extends BaseController {
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (TransactionCommitException e) {
+        } catch (TransactionCommitException  e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -113,7 +114,7 @@ public class WebpayPlusDeferredController extends BaseController {
         try {
             final WebpayPlusTransactionStatusResponse response = WebpayPlus.DeferredTransaction.status(token);
             addModel("response", response);
-        } catch (Exception e) {
+        } catch (Exception  e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }

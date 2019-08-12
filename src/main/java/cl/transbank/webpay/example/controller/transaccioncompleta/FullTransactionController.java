@@ -4,11 +4,13 @@ import cl.transbank.transaccioncompleta.FullTransaction;
 import cl.transbank.transaccioncompleta.model.FullTransactionCommitResponse;
 import cl.transbank.transaccioncompleta.model.FullTransactionCreateResponse;
 import cl.transbank.transaccioncompleta.model.FullTransactionInstallmentResponse;
+import cl.transbank.transaccioncompleta.model.FullTransactionStatusResponse;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCommitException;
 import cl.transbank.webpay.exception.TransactionCreateException;
 import cl.transbank.webpay.exception.TransactionInstallmentException;
+import cl.transbank.webpay.exception.TransactionStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -113,6 +115,34 @@ public class FullTransactionController extends BaseController {
         }
 
         return new ModelAndView("transaccioncompleta/transaction-installments", "model", getModel());
+    }
+
+    @RequestMapping(value = {"/status"}, method = RequestMethod.POST)
+    public ModelAndView status(@RequestParam("token") String tokenWs, HttpServletRequest request) {
+        log.info(String.format("token_ws : %s", tokenWs));
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", tokenWs);
+
+        try {
+            final FullTransactionStatusResponse response = FullTransaction.Transaction.status(tokenWs);
+
+            details.put("amount", response.getAmount());
+            log.debug(String.format("response : %s", response));
+            details.put("response", response);
+        } catch (TransactionStatusException | IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/transaction-status", "details", details);
+    }
+
+    @RequestMapping(value = "/status-form", method = RequestMethod.GET)
+    public ModelAndView patpassWebpayStatusForm(HttpServletRequest request){
+        String endpoint = request.getRequestURL().toString().replace("-form", "");
+        addModel("endpoint", endpoint);
+        return new ModelAndView("transaccioncompleta/transaction-status-form", "model", getModel());
     }
 
 }

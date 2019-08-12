@@ -46,6 +46,8 @@
     <tr>
     <td>Transacci&oacute;n Completa</td>
     <td><a href="/fulltransaction/create">Crear Transacci&oacute;n</a></td>
+    <td><a href="/fulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
+    <td><a href="/fulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
 
     <tr>

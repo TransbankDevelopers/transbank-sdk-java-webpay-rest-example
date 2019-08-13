@@ -21,6 +21,7 @@
             </c:forEach>
             </div>
 
-            <a href="/">&laquo; volver a index</a>
+            <a class="btn btn-success" href="/">&laquo; volver a index</a>
+            <a class="btn btn-default" href="javascript:history.back();">&laquo; volver atras</a>
         </body>
     </html>

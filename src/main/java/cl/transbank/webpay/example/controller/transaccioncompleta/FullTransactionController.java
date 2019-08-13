@@ -1,16 +1,10 @@
 package cl.transbank.webpay.example.controller.transaccioncompleta;
 
 import cl.transbank.transaccioncompleta.FullTransaction;
-import cl.transbank.transaccioncompleta.model.FullTransactionCommitResponse;
-import cl.transbank.transaccioncompleta.model.FullTransactionCreateResponse;
-import cl.transbank.transaccioncompleta.model.FullTransactionInstallmentResponse;
-import cl.transbank.transaccioncompleta.model.FullTransactionStatusResponse;
+import cl.transbank.transaccioncompleta.model.*;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.TransactionCommitException;
-import cl.transbank.webpay.exception.TransactionCreateException;
-import cl.transbank.webpay.exception.TransactionInstallmentException;
-import cl.transbank.webpay.exception.TransactionStatusException;
+import cl.transbank.webpay.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -139,10 +133,39 @@ public class FullTransactionController extends BaseController {
     }
 
     @RequestMapping(value = "/status-form", method = RequestMethod.GET)
-    public ModelAndView patpassWebpayStatusForm(HttpServletRequest request){
+    public ModelAndView statusForm(HttpServletRequest request){
         String endpoint = request.getRequestURL().toString().replace("-form", "");
         addModel("endpoint", endpoint);
         return new ModelAndView("transaccioncompleta/transaction-status-form", "model", getModel());
+    }
+
+    @RequestMapping(value = {"/refund"}, method = RequestMethod.POST)
+    public ModelAndView refund(@RequestParam("token") String tokenWs,
+                               @RequestParam("amount") double amount,HttpServletRequest request) {
+        log.info(String.format("token_ws : %s", tokenWs));
+
+        cleanModel();
+        addRequest("token_ws", tokenWs);
+        addRequest("amount", amount);
+
+
+        try {
+            final FullTransactionRefundResponse response = FullTransaction.Transaction.refund(tokenWs,amount);
+            log.debug(String.format("response : %s", response.getResponseCode()));
+            addModel("response", response);
+        } catch (IOException | TransactionRefundException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/transaction-refund", "model", getModel());
+    }
+
+    @RequestMapping(value = "/refund-form", method = RequestMethod.GET)
+    public ModelAndView refundForm(HttpServletRequest request){
+        String endpoint = request.getRequestURL().toString().replace("-form", "");
+        addModel("endpoint", endpoint);
+        return new ModelAndView("transaccioncompleta/transaction-refund-form", "model", getModel());
     }
 
 }

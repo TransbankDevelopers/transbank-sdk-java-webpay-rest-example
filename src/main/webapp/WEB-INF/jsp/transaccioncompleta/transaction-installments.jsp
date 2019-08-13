@@ -8,9 +8,9 @@
 </head>
 
 <body class="container">
-<h1>Ejemplos Transaccion Completa - Procesando Cuotas</h1>
+<h2>Ejemplos Transaccion Completa - Procesando Cuotas</h2>
 
-<h2>Step: Cuotas</h2>
+<h3>Step: Cuotas</h3>
 
     <div  class="d-flex align-items-center">
        <div id="spinnerId">
@@ -21,16 +21,24 @@
 
 
     <br>
-    <div class="card">
+    <div class="card" >
         <div class="card-body">
+          <div style="display: none;" id="cardId">
             <form action="/fulltransaction/commit" method="POST">
                 <div class="form-row">
                     <input type="hidden" name="token" value="${model.token}">
                     <input type="hidden" name="idQueryInstallments" value="${model.response.idQueryInstallments}">
 
                 </div>
-                <button id="confirmBtn" type="submit" class="btn btn-primary hidden">Confirmar Transaccion</button>
+                <p>Se han procesado las cuotas exitosamente</p>
+                <div style="background-color:lightgrey;">
+                <h3>Response:</h3>
+                ${model.response}
+                </div>
+                <br>
+                <button id="confirmBtn" type="submit" class="btn btn-primary">Confirmar Transaccion</button>
             </form>
+         </div>
         </div>
     </div>
     <br>
@@ -48,8 +56,9 @@
         function(){
             console.log("delay");
             $( "#spinnerId" ).hide( "slow", function() {
-            $( "#confirmBtn" ).show();
+
             });
+            $("#cardId").css("display", "block");
         }, 1000);
     });
     </script>

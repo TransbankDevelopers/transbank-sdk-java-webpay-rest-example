@@ -64,15 +64,19 @@ public class MallFullTransactionController extends BaseController {
 
     @RequestMapping(value = "/installments", method = RequestMethod.POST)
     public ModelAndView refund(@RequestParam("token") String token,
-                               @RequestParam("installmentsNumber") byte installmentsNumber) {
+                               @RequestParam("installmentsNumber") byte installmentsNumber,
+                               @RequestParam("buyOrder") String buyOrder,
+                               @RequestParam("commerceCode") String commerceCode) {
 
         cleanModel();
         addRequest("token", token);
         addRequest("installmentsNumber", installmentsNumber);
+        addRequest("buyOrder", buyOrder);
+        addRequest("commerceCode", commerceCode);
         System.out.println("Installments Number:"+installmentsNumber);
 
         try {
-            final FullTransactionInstallmentResponse response = FullTransaction.Transaction.installment(token, installmentsNumber);
+            final MallFullTransactionInstallmentResponse response = MallFullTransaction.Transaction.installment(token, installmentsNumber,buyOrder,commerceCode);
             addModel("response", response);
             addModel("token", token);
         } catch ( IOException | TransactionInstallmentException e) {

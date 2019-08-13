@@ -56,6 +56,13 @@
     <td><a href="/patpass-webpay/refund-form">Reembolsar Transacci&oacute;n</a></td>
     <td><a href="/patpass-webpay/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
+
+    <tr>
+    <td>Transacci&oacute;n Completa Mall</td>
+    <td><a href="/mallfulltransaction/create">Crear Transacci&oacute;n</a></td>
+    <td><a href="/mallfulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
+    <td><a href="/mallfulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
+    </tr>
     <%-- <tr>
         <td>Oneclick Mall Deferred Capture</td>
         <td><a href="/oneclick-mall-deferred/start">Start Inscription</a></td>

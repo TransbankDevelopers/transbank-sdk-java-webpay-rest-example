@@ -59,7 +59,7 @@ public class MallFullTransactionController extends BaseController {
             return new ErrorController().error();
         }
 
-        return new ModelAndView("transaccioncompleta/transaction-create", "details", details);
+        return new ModelAndView("transaccioncompleta/mall-transaction-create", "details", details);
     }
 }
 

@@ -1,5 +1,6 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.model.MallTransactionCreateDetails;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCommitException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -68,7 +70,7 @@ public class WebpayPlusMallController extends BaseController {
 
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (TransactionCreateException e) {
+        } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -98,7 +100,7 @@ public class WebpayPlusMallController extends BaseController {
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-commit", "-refund"));
-        } catch (TransactionCommitException e) {
+        } catch (TransactionCommitException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -131,7 +133,7 @@ public class WebpayPlusMallController extends BaseController {
             final WebpayPlusMallTransactionRefundResponse response =
                 WebpayPlus.MallTransaction.refund(token, childBuyOrder, childCommerceCode, amount);
             addModel("response", response);
-        } catch (TransactionRefundException e) {
+        } catch (TransactionRefundException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }

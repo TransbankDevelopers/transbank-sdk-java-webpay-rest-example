@@ -61,5 +61,30 @@ public class MallFullTransactionController extends BaseController {
 
         return new ModelAndView("transaccioncompleta/mall-transaction-create", "details", details);
     }
+
+    @RequestMapping(value = "/installments", method = RequestMethod.POST)
+    public ModelAndView refund(@RequestParam("token") String token,
+                               @RequestParam("installmentsNumber") byte installmentsNumber,
+                               @RequestParam("buyOrder") String buyOrder,
+                               @RequestParam("commerceCode") String commerceCode) {
+
+        cleanModel();
+        addRequest("token", token);
+        addRequest("installmentsNumber", installmentsNumber);
+        addRequest("buyOrder", buyOrder);
+        addRequest("commerceCode", commerceCode);
+        System.out.println("Installments Number:"+installmentsNumber);
+
+        try {
+            final MallFullTransactionInstallmentResponse response = MallFullTransaction.Transaction.installment(token, installmentsNumber,buyOrder,commerceCode);
+            addModel("response", response);
+            addModel("token", token);
+        } catch ( IOException | TransactionInstallmentException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/mall-transaction-installment", "model", getModel());
+    }
 }
 

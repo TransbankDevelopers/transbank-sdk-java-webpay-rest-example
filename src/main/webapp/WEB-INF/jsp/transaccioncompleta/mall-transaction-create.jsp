@@ -24,7 +24,7 @@
 </div>
     <div class="card">
         <div class="card-body">
-        <form action="/fulltransaction/status" method="POST">
+        <form action="/mallfulltransaction/status" method="POST">
             <div class="form-row">
                 <input type="hidden" name="token" value="${details.get("token")}">
                     <div class="form-group col-sm-4">
@@ -38,25 +38,30 @@
     <br>
     <div class="card">
         <div class="card-body">
-            <form action="/fulltransaction/installments" method="POST">
+            <form action="/mallfulltransaction/installments" method="POST">
                 <div class="form-row">
                     <input type="hidden" name="token" value="${details.get("token")}">
                     <div class="form-group col-sm-4">
                     <label for="installmentsNumber">Cantidad de Cuotas</label>
                         <select class="form-control" name="installmentsNumber">
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
                         </select>
                     <small id="emailHelp" class="form-text text-muted">seleccione la cantidad de cuotas o continuar.</small>
+                    <label >Orden de Compra</label>
+                        <input name="buyOrder" type="text"/>
+                    <label >Codigo de comercio</label>
+                        <input name="commerceCode" type="text"/>
+
                     </div>
 
                 </div>

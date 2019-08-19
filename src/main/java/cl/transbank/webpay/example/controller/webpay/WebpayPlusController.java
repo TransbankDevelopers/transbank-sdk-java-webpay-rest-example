@@ -68,7 +68,7 @@ public class WebpayPlusController extends BaseController {
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (TransactionCommitException e) {
+        } catch (TransactionCommitException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -92,7 +92,7 @@ public class WebpayPlusController extends BaseController {
             log.info(response.toString());
             log.debug(String.format("response : %s", response));
             details.put("response", response);
-        } catch (TransactionRefundException e) {
+        } catch (TransactionRefundException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }

@@ -40,6 +40,7 @@
         <div class="card-body col-sm-4">
             <form action="/mallfulltransaction/installments" method="POST">
                 <input type="hidden" name="token" value="${details.get("token")}">
+
                 <div class="form-group">
                 <label for="installmentsNumber">Cantidad de Cuotas</label>
                     <select class="form-control" name="installmentsNumber" id="installmentsNumber">

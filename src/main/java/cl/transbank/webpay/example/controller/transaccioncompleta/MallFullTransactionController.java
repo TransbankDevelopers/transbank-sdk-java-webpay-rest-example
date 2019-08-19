@@ -45,7 +45,7 @@ public class MallFullTransactionController extends BaseController {
         String cardExpirationDate= "23/03";
 
         Map<String, Object> details = new HashMap<>();
-        details.put("buyOrder", "r234n347");
+        details.put("buyOrder", buyOrder);
         details.put("sessionId", sessionId);
         details.put("cardNumber", cardNumber);
         details.put("cardExpirationDate", cardExpirationDate);
@@ -53,7 +53,7 @@ public class MallFullTransactionController extends BaseController {
 
         try {
             MallFullTransactionCreateResponse response = MallFullTransaction.Transaction.create(buyOrder, sessionId, cardNumber, cardExpirationDate, MallTransactionCreateDetails.build()
-                    .add(1000, "597055555552", "r234n347"));
+                    .add(1000, "597055555552", buyOrder));
             details.put("token", response.getToken());
         } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);

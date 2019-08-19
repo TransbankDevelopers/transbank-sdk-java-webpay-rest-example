@@ -45,14 +45,15 @@ public class MallFullTransactionController extends BaseController {
         String cardExpirationDate= "23/03";
 
         Map<String, Object> details = new HashMap<>();
-        details.put("buyOrder", buyOrder);
+        details.put("buyOrder", "r234n347");
         details.put("sessionId", sessionId);
         details.put("cardNumber", cardNumber);
         details.put("cardExpirationDate", cardExpirationDate);
+        details.put("commerceCode", "597055555552");
 
         try {
             MallFullTransactionCreateResponse response = MallFullTransaction.Transaction.create(buyOrder, sessionId, cardNumber, cardExpirationDate, MallTransactionCreateDetails.build()
-                    .add(1000, "597055555536", "r234n347"));
+                    .add(1000, "597055555552", "r234n347"));
             details.put("token", response.getToken());
         } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -76,15 +77,50 @@ public class MallFullTransactionController extends BaseController {
         System.out.println("Installments Number:"+installmentsNumber);
 
         try {
-            final MallFullTransactionInstallmentResponse response = MallFullTransaction.Transaction.installment(token, installmentsNumber,buyOrder,commerceCode);
+            final MallFullTransactionInstallmentResponse response = MallFullTransaction.Transaction.installment(token,commerceCode,buyOrder,installmentsNumber);
             addModel("response", response);
             addModel("token", token);
+            addModel("buyOrder", buyOrder);
+            addModel("commerceCode", commerceCode);
         } catch ( IOException | TransactionInstallmentException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
 
         return new ModelAndView("transaccioncompleta/mall-transaction-installment", "model", getModel());
+    }
+
+    @RequestMapping(value = {"/commit"}, method = RequestMethod.POST)
+    public ModelAndView commit(@RequestParam("token") String tokenWs, HttpServletRequest request,
+                               @RequestParam("idQueryInstallments") Long idQueryInstallments,
+                               @RequestParam("buyOrder") String buyOrder,
+                               @RequestParam("commerceCode") String commerceCode) {
+        log.info(String.format("token_ws : %s", tokenWs));
+
+        byte deferredPeriodIndex= 1;
+        Boolean gracePeriod = false;
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", tokenWs);
+        details.put("deferred_period_index", deferredPeriodIndex);
+        details.put("grace_period", gracePeriod);
+        details.put("buyOrder", buyOrder);
+        details.put("commerceCode", commerceCode);
+
+        MallTransactionCommitDetails details2 = MallTransactionCommitDetails.build().add(commerceCode,buyOrder,idQueryInstallments,deferredPeriodIndex,gracePeriod);
+
+        try {
+            final MallFullTransactionCommitResponse response = MallFullTransaction.Transaction.commit(tokenWs,details2);
+
+
+            log.debug(String.format("response : %s", response));
+            details.put("response", response);
+        } catch (TransactionCommitException | IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/mall-transaction-commit", "details", details);
     }
 }
 

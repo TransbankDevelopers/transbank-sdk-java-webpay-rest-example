@@ -28,6 +28,8 @@
         <div class="form-row">
         <input type="hidden" name="token" value="${model.token}">
         <input type="hidden" name="idQueryInstallments" value="${model.response.idQueryInstallments}">
+        <input type="hidden" name="buyOrder" value="${model.buyOrder}">
+        <input type="hidden" name="commerceCode" value="${model.commerceCode}">
 
         </div>
         <p>Se han procesado las cuotas exitosamente</p>

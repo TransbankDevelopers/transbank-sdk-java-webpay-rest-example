@@ -122,5 +122,68 @@ public class MallFullTransactionController extends BaseController {
 
         return new ModelAndView("transaccioncompleta/mall-transaction-commit", "details", details);
     }
+
+    @RequestMapping(value = {"/status"}, method = RequestMethod.POST)
+    public ModelAndView status(@RequestParam("token") String tokenWs, HttpServletRequest request) {
+        log.info(String.format("token_ws : %s", tokenWs));
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", tokenWs);
+
+        try {
+            final MallFullTransactionStatusResponse response = MallFullTransaction.Transaction.status(tokenWs);
+
+
+            log.debug(String.format("response : %s", response));
+            details.put("response", response);
+        } catch (TransactionStatusException | IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/mall-transaction-status", "details", details);
+    }
+
+    @RequestMapping(value = "/status-form", method = RequestMethod.GET)
+    public ModelAndView statusForm(HttpServletRequest request){
+        String endpoint = request.getRequestURL().toString().replace("-form", "");
+        addModel("endpoint", endpoint);
+        return new ModelAndView("transaccioncompleta/mall-transaction-status-form", "model", getModel());
+    }
+
+    @RequestMapping(value = {"/refund"}, method = RequestMethod.POST)
+    public ModelAndView refund(@RequestParam("token") String tokenWs,
+                               @RequestParam("amount") double amount,
+                               @RequestParam("commerceCode") String commerceCode,
+                               @RequestParam("buyOrder") String buyOrder,
+                               HttpServletRequest request) {
+        log.info(String.format("token_ws : %s", tokenWs));
+        //double amount,String commerceCode, String buyOrder
+        cleanModel();
+        addRequest("token_ws", tokenWs);
+        addRequest("amount", amount);
+        addRequest("commerceCode", commerceCode);
+        addRequest("buyOrder", buyOrder);
+
+
+        try {
+            final MallFullTransactionRefundResponse response = MallFullTransaction.Transaction.refund(tokenWs,amount,commerceCode,buyOrder);
+            log.debug(String.format("response : %s", response.getResponseCode()));
+            addModel("response", response);
+        } catch (IOException | TransactionRefundException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/mall-transaction-refund", "model", getModel());
+    }
+
+    @RequestMapping(value = "/refund-form", method = RequestMethod.GET)
+    public ModelAndView refundForm(HttpServletRequest request){
+        String endpoint = request.getRequestURL().toString().replace("-form", "");
+        addModel("endpoint", endpoint);
+        return new ModelAndView("transaccioncompleta/mall-transaction-refund-form", "model", getModel());
+    }
+
 }
 

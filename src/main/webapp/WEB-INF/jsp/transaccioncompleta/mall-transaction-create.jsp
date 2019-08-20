@@ -37,36 +37,39 @@
 
     <br>
     <div class="card">
-        <div class="card-body">
+        <div class="card-body col-sm-4">
             <form action="/mallfulltransaction/installments" method="POST">
-                <div class="form-row">
-                    <input type="hidden" name="token" value="${details.get("token")}">
-                    <div class="form-group col-sm-4">
-                    <label for="installmentsNumber">Cantidad de Cuotas</label>
-                        <select class="form-control" name="installmentsNumber">
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                        </select>
-                    <small id="emailHelp" class="form-text text-muted">seleccione la cantidad de cuotas o continuar.</small>
-                    <label >Orden de Compra</label>
-                        <input name="buyOrder" type="text"/>
-                    <label >Codigo de comercio</label>
-                        <input name="commerceCode" type="text"/>
+                <input type="hidden" name="token" value="${details.get("token")}">
 
-                    </div>
-
+                <div class="form-group">
+                <label for="installmentsNumber">Cantidad de Cuotas</label>
+                    <select class="form-control" name="installmentsNumber" id="installmentsNumber">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    </select>
+                <small id="emailHelp" class="form-text text-muted">Seleccione la cantidad de cuotas o continuar.</small>
                 </div>
+                <div class="form-group">
+                <label for="buyOrder">Orden de Compra</label>
+                    <input class="form-control" name="buyOrder" id="buyOrder" type="text" value="${details.get("buyOrder")}"/>
+                </div>
+                <div class="form-group">
+                <label for="commerceCode">Codigo de comercio</label>
+                <input class="form-control" name="commerceCode" id="commerceCode" type="text" value="${details.get("commerceCode")}"/>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Continuar</button>
             </form>
+
         </div>
     </div>
 

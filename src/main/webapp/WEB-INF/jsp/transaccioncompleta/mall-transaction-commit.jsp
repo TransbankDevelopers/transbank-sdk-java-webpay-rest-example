@@ -28,9 +28,16 @@
                         <div class="form-row">
                         <input type="hidden" name="token" value="${details.get("token_ws")}">
                             <div class="form-group col-sm-4">
-                            <input type="text" id="amount" name="amount" value="${details.get("amount")}" />
-                            <br>
-
+                                <label for="amount">amount:</label>
+                                <input type="text" id="amount" name="amount" value="${details.get("amount")}" />
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="commerceCode">commerceCode:</label>
+                                <input type="text" id="commerceCode" name="commerceCode" value="${details.get("commerceCode")}" />
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="buyOrder">buyOrder:</label>
+                                <input type="text" id="buyOrder" name="buyOrder" value="${details.get("buyOrder")}" />
                             </div>
                             <button type="submit" class="btn btn-primary">Pedir Reembolso</button>
                         </div>

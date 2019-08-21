@@ -63,6 +63,13 @@
     <td><a href="/mallfulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
     <td><a href="/mallfulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
+
+    <tr>
+    <td>Patpass Comercio</td>
+    <td><a href="/patpass-comercio/start">Crear Transacci&oacute;n</a></td>
+    <td><a href="#"></a></td>
+    <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
+    </tr>
     <%-- <tr>
         <td>Oneclick Mall Deferred Capture</td>
         <td><a href="/oneclick-mall-deferred/start">Start Inscription</a></td>

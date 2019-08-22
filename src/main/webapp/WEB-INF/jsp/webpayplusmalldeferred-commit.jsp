@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Ejemplos Webpay - Confirmar Transacci&oacute;n</title>
+    <title>Ejemplos Webpay Mall Deferred - Confirmar Transacci&oacute;n</title>
     <jsp:include page="template/header.jsp"/>
 </head>
 
 <body class="container">
     <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="#">Ejemplos Webpay - Confirmar Transacci&oacute;n</a></li>
+    <li class="breadcrumb-item"><a href="#">Ejemplos Webpay Mall Deferred - Confirmar Transacci&oacute;n</a></li>
     <li class="breadcrumb-item active" aria-current="page">Step: <strong>Commit Transaction</strong></li>
     </ol>
     </nav>
@@ -26,12 +26,13 @@
 </div>
 <p><samp>Pago ACEPTADO por webpay</samp></p>
 <br>
-<form action="/webpayplusmall-refund" method="POST">
+<form action="/webpayplusmalldeferred-capture" method="POST">
     <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
     <input type="hidden" name="child_buy_order" value="${details.get("child_buy_order")}">
     <input type="hidden" name="child_commerce_code" value="${details.get("child_commerce_code")}">
-    <input type="hidden" name="amount" value="${details.get("child_amount")}">
-    <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
+    <input type="hidden" name="child_amount" value="${details.get("child_amount")}">
+    <input type="hidden" name="authorization_code" value="${details.get("authorization_code")}">
+    <input type="submit" value="Capturar Pago">
 </form>
 <a href=".">&laquo; volver a index</a>
 </body>

@@ -3,20 +3,29 @@
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Ejemplos Patpass Webpay - Solicitar Estado</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         </head>
 
         <body class="container">
-        <h1>Ejemplos Patpass Webpay - Solicitar Estado</h1>
-
-        <form id="formulario" action="${model.endpoint}" method="POST">
-        <fieldset>
-        <legend>Formulario solicitud de estado</legend>
-        <br/><br/>
-        <label>token_ws:</label><input name="token_ws" type="text"/>&nbsp;&nbsp;&nbsp;
-        <input name="enviar" type="submit" value="Enviar"/>
-        </fieldset>
-        </form>
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Ejemplos Patpass Webpay - Solicitar Estado</a></li>
+        </ol>
+        </nav>
+        <div class="card">
+        <div class="card-body col-sm-4">
+                <form id="formulario" action="${model.endpoint}" method="POST">
+                <legend>Formulario solicitud de estado</legend>
+                <div class="form-group">
+                        <label>token_ws:</label><input name="token_ws" type="text" class="form-control"/>
+                </div>&nbsp;&nbsp;&nbsp;
+                <input name="enviar" type="submit" value="Enviar" class="btn btn-primary"/>
+                </form>
+        </div>
+        </div>
         <br>
         <a href="/">&laquo; volver a index</a>
+        <jsp:include page="../template/footer.jsp"/>
         </body>
         </html>

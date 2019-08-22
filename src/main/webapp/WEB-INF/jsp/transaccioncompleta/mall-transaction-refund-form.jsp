@@ -1,35 +1,38 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
         <head>
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <jsp:include page="../template/header.jsp"/>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Transaccion Completa Mall - Transaccion Anulaci&oacute;n</title>
         </head>
 
         <body class="container">
-        <h1>Transaccion Completa Mall - Transaccion Anulaci&oacute;n</h1>
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Transaccion Completa Mall - Transaccion Anulaci&oacute;n</a></li>
+        </ol>
+        </nav>
         <div class="card">
-        <div class="card-body">
+        <div class="card-body col-sm-4">
                 <form id="formulario" action="/mallfulltransaction/refund" method="POST">
 
                         <legend>Formulario de Anulaci&oacute;n</legend>
                         <br/><br/>
                         <div class="form-group">
                                 <label for="token">token_ws:</label>
-                                <input name="token" id="token" type="text"/>
+                                <input name="token" id="token" type="text" class="form-control"/>
                         </div>
                         <div class="form-group">
                                 <label for="amount">amount:</label>
-                                <input name="amount" id="amount" type="text"/>
+                                <input name="amount" id="amount" type="text" class="form-control"/>
                         </div>
                         <div class="form-group">
                                 <label for="commerceCode">commerceCode:</label>
-                                <input name="commerceCode" id="commerceCode" type="text"/>
+                                <input name="commerceCode" id="commerceCode" type="text" class="form-control"/>
                         </div>
                         <div class="form-group">
                                 <label for="buyOrder">buyOrder:</label>
-                                <input name="buyOrder" id="buyOrder" type="text"/>
+                                <input name="buyOrder" id="buyOrder" type="text" class="form-control"/>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Enviar</button>
@@ -38,9 +41,6 @@
         </div>
         <br>
         <a href="/">&laquo; volver a index</a>
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <jsp:include page="../template/footer.jsp"/>
         </body>
 </html>

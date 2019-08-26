@@ -33,13 +33,6 @@ public class PatpassByWebpayController extends BaseController {
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView create(HttpServletRequest request) {
-        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
-        java.util.logging.Logger globalLog = java.util.logging.Logger.getLogger("cl.transbank");
-        globalLog.setUseParentHandlers(false);
-        globalLog.addHandler(new ConsoleHandler() {
-            {/*setOutputStream(System.out);*/setLevel(Level.ALL);}
-        });
-        globalLog.setLevel(Level.ALL);
 
         log.info("Patpass Webpay Transaction.create");
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));

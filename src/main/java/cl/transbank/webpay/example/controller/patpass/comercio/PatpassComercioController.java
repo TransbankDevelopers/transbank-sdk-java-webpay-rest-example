@@ -33,6 +33,21 @@ public class PatpassComercioController extends BaseController {
 
         // clean model
         cleanModel();
+        addRequest("name", "nombre");
+        addRequest("firstLastName", "apellido");
+        addRequest("secondLastName", "sapellido");
+        addRequest("rut", "14959787-6");
+        addRequest("serviceId", "76");
+        addRequest("finalUrl", "https://www.comercio.com/urlrfinal");
+        addRequest("commerceCode", "28299257");
+        addRequest("maxAmount", 1500);
+        addRequest("phoneNumber", "012356545");
+        addRequest("mobileNumber", "012356545");
+        addRequest("patpassName", "nombre del patpass");
+        addRequest("personEmail", "persona@persona.cl");
+        addRequest("commerceEmail", "comercio@comercio.cl");
+        addRequest("address", "huerfanos 101");
+        addRequest("city", "Santiago");
 
         try {
             // call the SDK
@@ -57,6 +72,7 @@ public class PatpassComercioController extends BaseController {
             if (null != response) {
                 // add response to model in order to send it to the view
                 addModel("response", response);
+
 
                 // add necesary data to make form works
                 addModel("tbk_token", response.getToken());

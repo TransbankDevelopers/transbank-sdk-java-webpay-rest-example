@@ -3,22 +3,24 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Ejemplos Webpay Plus - Crear Transaccion</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <jsp:include page="template/header.jsp"/>
 </head>
 
 <body class="container">
-<h1>Ejemplos Webpay Plus - Crear Transaccion</h1>
+    <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="#">Ejemplos Webpay Plus - Crear Transaccion</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Step: <strong>Create Transaction</strong></li>
+    </ol>
+    </nav>
 
-<h2>Step: Create Transaction</h2>
-
-<div style="background-color:lightyellow;">
+<div class="alert alert-warning" role="alert">
     <h3>request</h3>
     <c:forEach var="detail" items="${details}">
         [<c:out value="${detail.key}"/>] = <c:out value="${detail.value}"/>,
     </c:forEach>
 </div>
-<div style="background-color:lightgrey;">
+<div class="alert alert-primary" role="alert">
     <h3>result</h3>
     [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
 </div>

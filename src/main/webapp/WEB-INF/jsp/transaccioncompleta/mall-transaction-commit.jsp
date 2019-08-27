@@ -21,7 +21,7 @@
             <div class="alert alert-primary" role="alert">
             <h3>result</h3>
             <c:forEach var="detail" items="${details}">
-                [<c:out value="${detail.key}"/>] = <c:out value="${detail.value}"/>,
+                [<c:out value="${detail.key}"/>] = <c:out value="${detail.value}"/> </br>
             </c:forEach>
             </div>
 

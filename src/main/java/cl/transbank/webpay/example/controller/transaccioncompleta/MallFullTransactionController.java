@@ -69,8 +69,10 @@ public class MallFullTransactionController extends BaseController {
         addRequest("commerceCode", commerceCode);
         System.out.println("Installments Number:"+installmentsNumber);
 
+        MallFullTransactionInstallmentsDetails installmentsDetails = MallFullTransactionInstallmentsDetails.build().add(commerceCode, buyOrder, installmentsNumber);
+
         try {
-            final MallFullTransactionInstallmentResponse response = MallFullTransaction.Transaction.installment(token,commerceCode,buyOrder,installmentsNumber);
+            final MallFullTransactionInstallmentsResponse response = MallFullTransaction.Transaction.installment(token,installmentsDetails);
             addModel("response", response);
             addModel("token", token);
             addModel("buyOrder", buyOrder);

@@ -27,12 +27,16 @@
             <br>
                     <c:set var="val" value="${model.response.responseCode}"/>
                     <c:choose>
-                            <c:when test="${val == '0'}">
-                                    <p><samp>Reembolso realizado con exito.</samp></p>
-                            </c:when>
-                            <c:otherwise>
-                                    <p><samp>upss. el reembolso no se pudo llevar a cabo</samp></p>
-                            </c:otherwise>
+                        <c:when test="${val == '0'}">
+                            <div class="alert alert-success" role="alert">
+                            Reembolso realizado con exito.
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="alert alert-danger" role="alert">
+                            upss. el reembolso no se pudo llevar a cabo
+                            </div>
+                        </c:otherwise>
                     </c:choose>
 
             <br>

@@ -30,15 +30,18 @@
         <form action="/mallfulltransaction/commit" method="POST">
         <div class="form-row">
         <input type="hidden" name="token" value="${model.token}">
-        <input type="hidden" name="idQueryInstallments" value="${model.response.idQueryInstallments}">
+        <input type="hidden" name="idQueryInstallments" value="${model.response.responseList[0].idQueryInstallments}">
         <input type="hidden" name="buyOrder" value="${model.buyOrder}">
         <input type="hidden" name="commerceCode" value="${model.commerceCode}">
 
         </div>
-        <p>Se han procesado las cuotas exitosamente</p>
+
+        <div class="alert alert-success" role="alert">
+        Se han procesado las cuotas exitosamente
+        </div>
         <div class="alert alert-primary" role="alert">
         <h3>Response:</h3>
-        ${model.response}
+        ${model.response.responseList[0]}
         </div>
         <br>
         <button id="confirmBtn" type="submit" class="btn btn-primary">Confirmar Transaccion</button>

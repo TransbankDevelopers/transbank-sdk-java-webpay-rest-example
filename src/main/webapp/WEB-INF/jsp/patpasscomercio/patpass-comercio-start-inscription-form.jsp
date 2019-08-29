@@ -31,7 +31,7 @@
 <br>
 <form action="${model.url_webpay}" method="post" name="tokenForm">
     <input type="hidden" name="tokenComercio" value="${model.tbk_token}">
-    <input type="submit" class="btn btn-success" value="Start Patpass comercio status">
+    <input type="submit" class="btn btn-success" value="Start Patpass comercio">
 </form>
 <br>
     <jsp:include page="../template/footer.jsp"/>

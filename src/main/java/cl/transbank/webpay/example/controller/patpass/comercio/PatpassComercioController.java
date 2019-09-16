@@ -53,23 +53,6 @@ public class PatpassComercioController extends BaseController {
         String address = "huerfanos 101";
         String city = "Santiago";
 
-        /*String url = "https://www.help.cl/contrata-online/patpassWs/response.php";
-        String name = "Diego";
-        String firstLastName = "Sanchez";
-        String secondLastName = "Valdovinos";
-        String rut = "18620531-6";
-        String serviceId = "8050017";
-        String finalUrl = "https://www.help.cl/contrata-online/patpassWs/finalizar.php";
-        String commerceCode = "28299257";
-        String maxAmount = "";
-        String phoneNumber = "57508624";
-        String mobileNumber = "57508624";
-        String patpassName = "Help - 8050014";
-        String personEmail = "isral.escaida@continuum.cl";
-        String commerceEmail = "alba.cardenas@continuum.cl";
-        String address = "Merced 156, Santiago, Chile";
-        String city = "Santiago";*/
-
 
         // clean model
         cleanModel();

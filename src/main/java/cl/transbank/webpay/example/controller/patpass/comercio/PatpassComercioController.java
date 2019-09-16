@@ -1,6 +1,9 @@
 package cl.transbank.webpay.example.controller.patpass.comercio;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
 import cl.transbank.patpass.PatpassComercio;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.patpass.model.PatpassComercioInscriptionStartResponse;
 import cl.transbank.patpass.model.PatpassComercioTransactionStatusResponse;
 import cl.transbank.webpay.example.controller.BaseController;
@@ -33,22 +36,39 @@ public class PatpassComercioController extends BaseController {
     public ModelAndView start(HttpServletRequest request) {
         logger.info("PatpassComercio.Inscription.start");
 
-        String url = request.getRequestURL().toString().replace("start","end-subscription");
+       String url = request.getRequestURL().toString().replace("start","end-subscription");
         String name = "nombre";
         String firstLastName = "apellido";
         String secondLastName = "sapellido";
         String rut = "14140066-5";
-        String serviceId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));;
+        String serviceId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String finalUrl = request.getRequestURL().toString().replace("start","voucher-generated");
         String commerceCode = "28299257";
-        double maxAmount = 1500;
+        String maxAmount = "";
         String phoneNumber = "123456734";
         String mobileNumber = "123456723";
         String patpassName = "nombre del patpass";
-        String personEmail = "otromail@persona.cl";
-        String commerceEmail = "otrocomercio@comercio.cl";
+        String personEmail = "alba.cardenas@continuum.cl";
+        String commerceEmail = "alba.cardenas@continuum.cl";
         String address = "huerfanos 101";
         String city = "Santiago";
+
+        /*String url = "https://www.help.cl/contrata-online/patpassWs/response.php";
+        String name = "Diego";
+        String firstLastName = "Sanchez";
+        String secondLastName = "Valdovinos";
+        String rut = "18620531-6";
+        String serviceId = "8050017";
+        String finalUrl = "https://www.help.cl/contrata-online/patpassWs/finalizar.php";
+        String commerceCode = "28299257";
+        String maxAmount = "";
+        String phoneNumber = "57508624";
+        String mobileNumber = "57508624";
+        String patpassName = "Help - 8050014";
+        String personEmail = "isral.escaida@continuum.cl";
+        String commerceEmail = "alba.cardenas@continuum.cl";
+        String address = "Merced 156, Santiago, Chile";
+        String city = "Santiago";*/
 
 
         // clean model
@@ -72,6 +92,10 @@ public class PatpassComercioController extends BaseController {
 
         try {
             // call the SDK
+            Options options = new PatpassOptions();
+            options.setApiKey("cxxXQgGD9vrVe4M41FIt");
+            options.setCommerceCode("28299257");
+            options.setIntegrationType(IntegrationType.LIVE);
             final PatpassComercioInscriptionStartResponse response = PatpassComercio.Inscription.start(url,
                     name,
                     firstLastName,
@@ -79,7 +103,6 @@ public class PatpassComercioController extends BaseController {
                     rut,
                     serviceId,
                     finalUrl,
-                    commerceCode,
                     maxAmount,
                     phoneNumber,
                     mobileNumber,
@@ -87,7 +110,8 @@ public class PatpassComercioController extends BaseController {
                     personEmail,
                     commerceEmail,
                     address,
-                    city);
+                    city,
+                    options);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -111,6 +135,7 @@ public class PatpassComercioController extends BaseController {
         logger.info(String.format("token_ws : %s", tokenWs));
         addModel("token_ws", tokenWs);
 
+
         return new ModelAndView("patpasscomercio/patpass-comercio-end-inscription-form", "model", getModel());
     }
 
@@ -119,7 +144,11 @@ public class PatpassComercioController extends BaseController {
         cleanModel();
         addRequest("token_ws", token);
         try {
-            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token);
+            Options options = new PatpassOptions();
+            options.setApiKey("cxxXQgGD9vrVe4M41FIt");
+            options.setCommerceCode("28299257");
+            options.setIntegrationType(IntegrationType.LIVE);
+            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token,options);
             addModel("response", response);
             addModel("token", token);
         } catch (Exception e) {

@@ -44,7 +44,7 @@ public class PatpassComercioController extends BaseController {
         String serviceId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String finalUrl = request.getRequestURL().toString().replace("start","voucher-generated");
         String commerceCode = "28299257";
-        String maxAmount = "";
+        double maxAmount = 0;
         String phoneNumber = "123456734";
         String mobileNumber = "123456723";
         String patpassName = "nombre del patpass";
@@ -78,7 +78,7 @@ public class PatpassComercioController extends BaseController {
             Options options = new PatpassOptions();
             options.setApiKey("cxxXQgGD9vrVe4M41FIt");
             options.setCommerceCode("28299257");
-            options.setIntegrationType(IntegrationType.LIVE);
+            options.setIntegrationType(IntegrationType.TEST);
             final PatpassComercioInscriptionStartResponse response = PatpassComercio.Inscription.start(url,
                     name,
                     firstLastName,

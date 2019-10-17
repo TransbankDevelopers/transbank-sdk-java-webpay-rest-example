@@ -18,13 +18,13 @@
     <tbody>
     <tr>
         <td>Webpay Plus</td>
-        <td><a href="/webpayplus">Crear Transacci&oacute;n</a></td>
+        <td><a href="/webpayplus-form">Crear Transacci&oacute;n</a></td>
         <td><a href="/webpayplus-refund-form">Reembolsar Transacci&oacute;n</a></td>
         <td><a href="/webpayplus-status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
     <tr>
         <td>Webpay Plus Mall</td>
-        <td><a href="/webpayplusmall">Crear Transacci&oacute;n</a></td>
+        <td><a href="/webpayplusmall-form">Crear Transacci&oacute;n</a></td>
         <td><a href="/webpayplusmall-refund-form">Reembolsar Transacci&oacute;n</a></td>
         <td><a href="/webpayplusmall-status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
@@ -44,37 +44,37 @@
 
     <tr>
         <td>Oneclick Mall</td>
-        <td><a href="/oneclick-mall/start">Comenzar Inscripci&oacute;n</a></td>
+        <td><a href="/oneclick-mall/start-form">Comenzar Inscripci&oacute;n</a></td>
         <td><a href="/oneclick-mall/refund-form">Reembolsar Transacci&oacute;n</a></td>
         <td><a href="/oneclick-mall/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
 
     <tr>
     <td>Transacci&oacute;n Completa</td>
-    <td><a href="/fulltransaction/create">Crear Transacci&oacute;n</a></td>
+    <td><a href="/fulltransaction/create-form">Crear Transacci&oacute;n</a></td>
     <td><a href="/fulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
     <td><a href="/fulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
 
     <tr>
     <td>Patpass-webpay</td>
-    <td><a href="/patpass-webpay/create">Crear Transacci&oacute;n</a></td>
+    <td><a href="/patpass-webpay/create-form">Crear Transacci&oacute;n</a></td>
     <td><a href="/patpass-webpay/refund-form">Reembolsar Transacci&oacute;n</a></td>
     <td><a href="/patpass-webpay/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
 
     <tr>
     <td>Transacci&oacute;n Completa Mall</td>
-    <td><a href="/mallfulltransaction/create">Crear Transacci&oacute;n</a></td>
+    <td><a href="/mallfulltransaction/create-form">Crear Transacci&oacute;n</a></td>
     <td><a href="/mallfulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
     <td><a href="/mallfulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
     </tr>
 
     <tr>
     <td>Patpass Comercio</td>
-    <td><a href="/patpass-comercio/start">Crear Transacci&oacute;n</a></td>
+    <td><a href="/patpass-comercio/start-form">Crear Transacci&oacute;n</a></td>
     <td><a href="#"></a></td>
-    <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
+    <td><a href=""></a></td>
     </tr>
     <%-- <tr>
         <td>Oneclick Mall Deferred Capture</td>

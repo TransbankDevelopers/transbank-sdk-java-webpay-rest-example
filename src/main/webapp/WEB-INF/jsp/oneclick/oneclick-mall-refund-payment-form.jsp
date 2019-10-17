@@ -25,13 +25,17 @@
     ${model.response}
 </div>
 <br>
-<p><samp>Payment accepted by Oneclick Mall</samp></p>
-<br>
 <form action="/oneclick-mall/refund" method="post">
     <input type="hidden" name="buy_order" value="${model.buyOrder}">
     <input type="hidden" name="child_commerce_code" value="${model.childOneCommerceCode}">
     <input type="hidden" name="child_buy_order" value="${model.chileOneBuyOrder}">
-    <input type="hidden" name="amount" value="${model.amountMallOne}">
+
+
+
+    <div class="form-group">
+    <label>amount:</label>
+      <input type="text" name="amount" value="${model.amountMallOne}">
+    </div>
     <input type="submit" value="Refund Oneclick Mall Payment">
 </form>
 <br>

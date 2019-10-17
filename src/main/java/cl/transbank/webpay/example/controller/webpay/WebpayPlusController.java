@@ -1,5 +1,8 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCaptureException;
@@ -31,12 +34,26 @@ public class WebpayPlusController extends BaseController {
         return new ModelAndView("index");
     }
 
-    @RequestMapping(value = "/webpayplus", method = RequestMethod.GET)
-    public ModelAndView webpayplus(HttpServletRequest request) {
+    @RequestMapping(value = "/webpayplus-form", method = RequestMethod.GET)
+    public ModelAndView webpayplusForm(HttpServletRequest request){
+        String returnUrl = request.getRequestURL().toString().replace("-form", "-end");
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        double amount = 1000;
-        String returnUrl = request.getRequestURL().append("-end").toString();
+        double amount = 1;
+        addModel("returnUrl", returnUrl);
+        addModel("buyOrder", buyOrder);
+        addModel("sessionId", sessionId);
+        addModel("amount", amount);
+        return new ModelAndView("webpayplus-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/webpayplus", method = RequestMethod.POST)
+    public ModelAndView webpayplus(HttpServletRequest request,
+                                   @RequestParam("returnUrl") String returnUrl,
+                                   @RequestParam("buyOrder") String buyOrder,
+                                   @RequestParam("sessionId") String sessionId,
+                                   @RequestParam("amount") Double amount) {
+
 
         Map<String, Object> details = new HashMap<>();
         details.put("buyOrder", buyOrder);
@@ -62,7 +79,6 @@ public class WebpayPlusController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-
         try {
             final WebpayPlusTransactionCommitResponse response = WebpayPlus.Transaction.commit(tokenWs);
             log.debug(String.format("response : %s", response));
@@ -86,7 +102,6 @@ public class WebpayPlusController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-
         try {
             final WebpayPlusTransactionRefundResponse response = WebpayPlus.Transaction.refund(tokenWs, amount);
             log.info(response.toString());
@@ -152,5 +167,13 @@ public class WebpayPlusController extends BaseController {
             return new ErrorController().error();
         }
         return new ModelAndView("webpayplus-status", "model", getModel());
+    }
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("2A20B03296717F18C349B2EEDABC6FD4FBBB41E26E772C30BFA4E9B30061AE6E");
+        options.setCommerceCode("597034919178");
+        options.setIntegrationType(type);
+
+        return options;
     }
 }

@@ -25,8 +25,7 @@
     ${model.response}
 </div>
 <br>
-<p><samp>Reembolso realizado con exito.</samp></p>
-<br>
+
 
 <a href="/oneclick-mall/inscription-delete" class="btn btn-primary">Eliminar inscripci&oacute;n</a>
 <br/>

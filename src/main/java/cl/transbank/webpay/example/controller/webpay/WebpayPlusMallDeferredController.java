@@ -1,6 +1,9 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
 import cl.transbank.model.MallTransactionCreateDetails;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCaptureException;
@@ -37,8 +40,8 @@ public class WebpayPlusMallDeferredController extends BaseController {
         String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        double amountMallOne = 1000;
-        double amountMallTwo = 1000;
+        double amountMallOne = 1;
+        double amountMallTwo = 2;
         String returnUrl = request.getRequestURL().append("-commit").toString();
 
         String mallOneCommerceCode = "597055555546";
@@ -55,7 +58,6 @@ public class WebpayPlusMallDeferredController extends BaseController {
         details.put("amountMallOne", amountMallOne);
         details.put("amountMallTwo", amountMallTwo);
         details.put("returnUrl", returnUrl);
-
         try {
 
             final WebpayPlusMallTransactionCreateResponse response = WebpayPlus.MallDeferredTransaction.create(buyOrder,
@@ -84,7 +86,6 @@ public class WebpayPlusMallDeferredController extends BaseController {
         details.put("child_commerce_code", childCommerceCode);
         details.put("child_buy_order", childBuyOrder);
         details.put("child_amount", amount);
-
         try {
             final WebpayPlusMallTransactionCaptureResponse response = WebpayPlus.MallDeferredTransaction.capture(tokenWs, childCommerceCode, childBuyOrder, authorizationCode, amount);
 
@@ -105,7 +106,6 @@ public class WebpayPlusMallDeferredController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-
         try {
             final WebpayPlusMallTransactionCommitResponse response = WebpayPlus.MallDeferredTransaction.commit(tokenWs);
 
@@ -150,7 +150,6 @@ public class WebpayPlusMallDeferredController extends BaseController {
         addRequest("child_commerce_code", childCommerceCode);
         addRequest("child_buy_order", childBuyOrder);
         addRequest("child_amount", amount);
-
         try {
 
             final WebpayPlusTransactionRefundResponse response = WebpayPlus.MallDeferredTransaction.refund(token, childBuyOrder, childCommerceCode, amount);
@@ -167,7 +166,6 @@ public class WebpayPlusMallDeferredController extends BaseController {
     public ModelAndView status(@RequestParam("token_ws") String token){
         cleanModel();
         addRequest("token_ws", token);
-
         try {
             final WebpayPlusMallTransactionStatusResponse status = WebpayPlus.MallDeferredTransaction.status(token);
             addModel("response", status);
@@ -184,5 +182,14 @@ public class WebpayPlusMallDeferredController extends BaseController {
 
         addModel("endpoint", statusEndpoint);
         return new ModelAndView("webpayplus-status-form", "model", getModel());
+    }
+
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("EA9B5F4DBABB0C9FCFD045A432CA03C600F5223ECAF9C5D4DB9DC2150E50F35C");
+        options.setCommerceCode("597034925933");
+        options.setIntegrationType(type);
+
+        return options;
     }
 }

@@ -1,5 +1,8 @@
 package cl.transbank.webpay.example.controller.oneclick;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.exception.*;
 import cl.transbank.webpay.oneclick.OneclickMall;
@@ -25,25 +28,39 @@ import java.util.logging.Level;
 public class OneclickMallController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(OneclickMallController.class);
 
-    @Getter(AccessLevel.PRIVATE) private String username = "goncafa";
-    @Getter(AccessLevel.PRIVATE) private String email = "gonzalo.castillo@continuum.cl";
+    @Getter(AccessLevel.PRIVATE) @Setter private String username = "username";
+    @Getter(AccessLevel.PRIVATE) @Setter private String email = "username@mail.com";
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE) private String userTbkToken;
-    @Getter(AccessLevel.PRIVATE) private String mallOneCommerceCode = "597055555542";
-    @Getter(AccessLevel.PRIVATE) private String mallTwoCommerceCode = "597055555543";
+    @Getter(AccessLevel.PRIVATE) @Setter private String mallOneCommerceCode = "597055555542";
+    @Getter(AccessLevel.PRIVATE) @Setter private String mallTwoCommerceCode = "597055555543";
 
     public OneclickMallController() {
         prepareLoger(Level.ALL);
     }
 
-    @RequestMapping(value = "/start", method = RequestMethod.GET)
-    public ModelAndView start(HttpServletRequest request) {
-        logger.info("OneclickMall.Inscription.start");
-
+    @RequestMapping(value = "/start-form", method = RequestMethod.GET)
+    public ModelAndView startsForm(HttpServletRequest request){
         // clean model
         cleanModel();
 
-        String responseUrl = request.getRequestURL().toString().replace("/start", "/finish");
+        String responseUrl = request.getRequestURL().toString().replace("/start-form", "/finish");
         logger.info(String.format("responseUrl : %s", responseUrl));
+
+        addModel("username", getUsername());
+        addModel("email", getEmail());
+        addModel("responseUrl", responseUrl);
+        return new ModelAndView("oneclick/oneclick-mall-start-inscription-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/start", method = RequestMethod.POST)
+    public ModelAndView start(HttpServletRequest request,
+                              @RequestParam("username") String username,
+                              @RequestParam("email") String email,
+                              @RequestParam("responseUrl") String responseUrl) {
+        logger.info("OneclickMall.Inscription.start");
+
+        this.setEmail(email);
+        this.setUsername(username);
 
         // add request to storage in order to send them to the view
         addRequest("username", getUsername());
@@ -67,7 +84,7 @@ public class OneclickMallController extends BaseController {
             e.printStackTrace();
         }
 
-        return new ModelAndView("oneclick/oneclick-mall-start-inscription-form", "model", getModel());
+        return new ModelAndView("oneclick/oneclick-mall-inscription-started", "model", getModel());
     }
 
     @RequestMapping(value = "/finish", method = RequestMethod.POST)
@@ -81,7 +98,7 @@ public class OneclickMallController extends BaseController {
 
         // add request to storage in order to send it to the view
         addRequest("token", token);
-
+        Options options = getOptions(IntegrationType.LIVE);
         try {
             final OneclickMallInscriptionFinishResponse response = OneclickMall.Inscription.finish(token);
             logger.info(String.format("response : %s", response));
@@ -92,6 +109,18 @@ public class OneclickMallController extends BaseController {
                 // add necesary data to make form works
                 addModel("tbk_user", response.getTbkUser());
                 addModel("username", getUsername());
+
+                String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+                String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+                byte installmentsOne = (byte) 1;
+                String commerceCodeOne = getMallOneCommerceCode();
+                double amount1= 1;
+
+                addModel("buyOrder", buyOrder);
+                addModel("buyOrderMallOne", buyOrderMallOne);
+                addModel("installmentsOne", installmentsOne);
+                addModel("commerceCodeOne", commerceCodeOne);
+                addModel("amount1", amount1);
             }
         } catch (InscriptionFinishException | IOException e) {
             e.printStackTrace();
@@ -103,7 +132,15 @@ public class OneclickMallController extends BaseController {
     @RequestMapping(value = "/authorize", method = RequestMethod.POST)
     public ModelAndView authorize(@RequestParam("username") String username,
                                   @RequestParam("tbk_user") String tbkUser,
-                                  @RequestParam("amount") double amount) {
+                                  @RequestParam("amount1") double amount1,
+                                  @RequestParam(name="amount2",required = false, defaultValue = "0") double amount2,
+                                  @RequestParam("buyOrder") String buyOrder,
+                                  @RequestParam("buyOrderMallOne") String buyOrderMallOne,
+                                  @RequestParam("installmentsOne") byte installmentsOne,
+                                  @RequestParam("commerceCodeOne") String commerceCodeOne,
+                                  @RequestParam(name="buyOrderMallTwo",defaultValue = "") String buyOrderMallTwo,
+                                  @RequestParam(name="installmentsTwo", required = false, defaultValue = "0")  byte installmentsTwo,
+                                  @RequestParam(name="commerceCodeTwo",defaultValue = "") String commerceCodeTwo) {
         logger.info("OneclickMall.Transaction.authorize");
         logger.info(String.format("username : %s", username));
         logger.info(String.format("tbk_user : %s", tbkUser));
@@ -111,19 +148,22 @@ public class OneclickMallController extends BaseController {
         // clean model
         cleanModel();
 
-        String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+        this.setMallOneCommerceCode(commerceCodeOne);
+        this.setMallTwoCommerceCode(commerceCodeTwo);
+
+
         MallTransactionCreateDetails details = MallTransactionCreateDetails.build()
-                .add(amount, getMallOneCommerceCode(), buyOrderMallOne, (byte) 1)
-                .add(amount, getMallTwoCommerceCode(), buyOrderMallTwo, (byte) 1);
+                .add(amount1, getMallOneCommerceCode(), buyOrderMallOne, installmentsOne);
+            if(amount2 > 0 && !buyOrderMallTwo.equalsIgnoreCase("") &&
+                    !commerceCodeTwo.equalsIgnoreCase("") &&
+                    installmentsTwo>0)
+                details.add(amount2, getMallTwoCommerceCode(), buyOrderMallTwo, installmentsTwo);
 
         // add request to storage in order to send them to the view
         addRequest("buyOrder", buyOrder);
         addRequest("buyOrderMallOne", buyOrderMallOne);
         addRequest("buyOrderMallTwo", buyOrderMallTwo);
         addRequest("details", details);
-
         try {
             final OneclickMallTransactionAuthorizeResponse response = OneclickMall.Transaction.authorize(username, tbkUser, buyOrder, details);
             logger.info(String.format("response : %s", response));
@@ -136,8 +176,8 @@ public class OneclickMallController extends BaseController {
                 addModel("childTwoCommerceCode", getMallTwoCommerceCode());
                 addModel("chileOneBuyOrder", buyOrderMallOne);
                 addModel("chileTwoBuyOrder", buyOrderMallTwo);
-                addModel("amountMallOne", amount);
-                addModel("amountMallTwo", amount);
+                addModel("amountMallOne", amount1);
+                addModel("amountMallTwo", amount2);
             }
         } catch (TransactionAuthorizeException | IOException e) {
             e.printStackTrace();
@@ -165,7 +205,7 @@ public class OneclickMallController extends BaseController {
         addRequest("child_commerce_code", childCommerceCode);
         addRequest("child_buy_order", childBuyOrder);
         addRequest("amount", amount);
-
+        Options options = getOptions(IntegrationType.LIVE);
         try {
             final OneclickMallTransactionRefundResponse response = OneclickMall.Transaction.refund(buyOrder, childCommerceCode, childBuyOrder, amount);
             logger.info(String.format("response : %s", response));
@@ -198,6 +238,7 @@ public class OneclickMallController extends BaseController {
         cleanModel();
 
         addRequest("buy_order", buyOrder);
+        Options options = getOptions(IntegrationType.LIVE);
         try {
             final OneclickMallTransactionStatusResponse response = OneclickMall.Transaction.status(buyOrder);
             if (null != response) {
@@ -221,7 +262,7 @@ public class OneclickMallController extends BaseController {
 
         addRequest("username", getUsername());
         addRequest("tbk_token", getUserTbkToken());
-
+        Options options = getOptions(IntegrationType.LIVE);
         try {
             OneclickMall.Inscription.delete(getUsername(), getUserTbkToken());
         } catch (Exception e) {
@@ -229,5 +270,14 @@ public class OneclickMallController extends BaseController {
         }
 
         return new ModelAndView("oneclick/oneclick-mall-inscription-delete", "model", getModel());
+    }
+
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("C60B616633B57B9D0ACB346E9F3F18B414B702A2FE1172DEDC2F5E16EB9FB433");
+        options.setCommerceCode("597034926328");
+        options.setIntegrationType(type);
+
+        return options;
     }
 }

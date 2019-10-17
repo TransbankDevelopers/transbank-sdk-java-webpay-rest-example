@@ -25,14 +25,44 @@
     ${model.response}
 </div>
 <br>
-<p><samp>Inscription successfully finished on Oneclick Mall</samp></p>
-<br>
-<form action="/oneclick-mall/authorize" method="post">
-    <input type="hidden" name="username" value="${model.username}">
-    <input type="hidden" name="tbk_user" value="${model.tbk_user}">
-    Payment Amount: <input type="text" name="amount" value="1000">
-    <input type="submit" value="Authorize Payment">
-</form>
+<div class="col-sm-4">
+    <form action="/oneclick-mall/authorize" method="post">
+        <input type="hidden" name="username" value="${model.username}">
+        <input type="hidden" name="tbk_user" value="${model.tbk_user}">
+        <div class="form-group">
+        <label>buyOrder:</label><input name="buyOrder" type="text" class="form-control" value="${model.buyOrder}"/>
+        </div>
+        <legend>Comercio 1</legend>
+
+        <div class="form-group">
+        <label>buyOrderMallOne:</label><input name="buyOrderMallOne" type="text" class="form-control" value="${model.buyOrderMallOne}"/>
+        </div>
+        <div class="form-group">
+        <label>installmentsOne:</label><input name="installmentsOne" type="number" class="form-control" value="${model.installmentsOne}"/>
+        </div>
+        <div class="form-group">
+        <label>commerceCodeOne:</label><input name="commerceCodeOne" type="text" class="form-control" value="${model.commerceCodeOne}"/>
+        </div>
+        <div class="form-group">
+        <label>amount1:</label><input name="amount1" type="number" class="form-control" value="${model.amount1}"/>
+        </div>
+        <legend>Comercio 2</legend>
+        <div class="form-group">
+        <label>buyOrderMallTwo:</label><input name="buyOrderMallTwo" type="text" class="form-control" value=""/>
+        </div>
+        <div class="form-group">
+        <label>installmentsTwo:</label><input name="installmentsTwo" type="number" class="form-control" value=""/>
+        </div>
+        <div class="form-group">
+        <label>commerceCodeTwo:</label><input name="commerceCodeTwo" type="text" class="form-control" value=""/>
+        </div>
+        <div class="form-group">
+        <label>amount2:</label><input name="amount2" type="number" class="form-control" value=""/>
+        </div>
+        <input type="submit" value="Authorize Payment">
+
+    </form>
+</div>
 <br>
 
 <a href="/">&laquo; Back Index</a>

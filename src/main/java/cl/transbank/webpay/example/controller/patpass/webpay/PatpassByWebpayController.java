@@ -10,7 +10,6 @@ import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCommitException;
 import cl.transbank.webpay.exception.TransactionCreateException;
 import cl.transbank.webpay.exception.TransactionRefundException;
-import cl.transbank.webpay.webpayplus.model.WebpayPlusMallTransactionCommitResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -23,17 +22,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 
 @Controller
 @RequestMapping("/patpass-webpay")
 public class PatpassByWebpayController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(PatpassByWebpayController.class);
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public ModelAndView create(HttpServletRequest request) {
-
+    @RequestMapping(value = "/create-form", method = RequestMethod.GET)
+    public ModelAndView createForm(HttpServletRequest request) {
         log.info("Patpass Webpay Transaction.create");
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
@@ -47,6 +43,38 @@ public class PatpassByWebpayController extends BaseController {
         String cellphoneNumber = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String expirationDate = "2222-11-11";
         String commerceMail = String.format("%s@%s.COM", nextString(10), nextString(7));
+
+        addModel("buyOrder", buyOrder);
+        addModel("sessionId", sessionId);
+        addModel("buyOrder", buyOrder);
+        addModel("returnUrl", returnUrl);
+        addModel("serviceId", serviceId);
+        addModel("cardHolderId", cardHolderId);
+        addModel("cardHolderName", cardHolderName);
+        addModel("cardHolderLastName1", cardHolderLastName1);
+        addModel("cardHolderLastName2", cardHolderLastName2);
+        addModel("cardHolderMail", cardHolderMail);
+        addModel("cellphoneNumber", cellphoneNumber);
+        addModel("expirationDate", expirationDate);
+        addModel("commerceMail", commerceMail);
+
+        return new ModelAndView("patpasswebpay/patpass-webpay-transaction-create-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public ModelAndView create(HttpServletRequest request,
+                               @RequestParam("buyOrder") String buyOrder,
+                               @RequestParam("sessionId") String sessionId,
+                               @RequestParam("serviceId") String serviceId,
+                               @RequestParam("cardHolderId") String cardHolderId,
+                               @RequestParam("cardHolderName") String cardHolderName,
+                               @RequestParam("cardHolderLastName1") String cardHolderLastName1,
+                               @RequestParam("cardHolderLastName2") String cardHolderLastName2,
+                               @RequestParam("cardHolderMail") String cardHolderMail,
+                               @RequestParam("cellphoneNumber") String cellphoneNumber,
+                               @RequestParam("expirationDate") String expirationDate,
+                               @RequestParam("commerceMail") String commerceMail,
+                               @RequestParam("returnUrl") String returnUrl) {
 
         Map<String, Object> details = new HashMap<>();
         details.put("buyOrder", buyOrder);

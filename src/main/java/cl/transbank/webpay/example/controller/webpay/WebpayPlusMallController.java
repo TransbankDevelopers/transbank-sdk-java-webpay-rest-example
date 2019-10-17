@@ -1,6 +1,9 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
 import cl.transbank.model.MallTransactionCreateDetails;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCommitException;
@@ -30,33 +33,58 @@ import java.util.logging.Level;
 public class WebpayPlusMallController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(WebpayPlusMallController.class);
 
-    @RequestMapping(value = "/webpayplusmall", method = RequestMethod.GET)
-    public ModelAndView webpayplusMallCreate(HttpServletRequest request) {
-
-        log.info("Webpay Plus Mall MallTransaction.create");
+    @RequestMapping(value = "/webpayplusmall-form", method = RequestMethod.GET)
+    public ModelAndView webpayplusForm(HttpServletRequest request) {
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        double amountMallOne = 1000;
-        double amountMallTwo = 1000;
-        String returnUrl = request.getRequestURL().append("-commit").toString();
+        double amountMallOne = 1;
+        String mallOneCommerceCode = "34925941";
+        String returnUrl = request.getRequestURL().toString().replace("-form", "-commit");
 
-        String mallOneCommerceCode = "597055555536";
-        String mallTwoCommerceCode = "597055555537";
+        addModel("returnUrl", returnUrl);
+        addModel("buyOrder", buyOrder);
+        addModel("sessionId", sessionId);
+        addModel("amount1", amountMallOne);
+        addModel("commerceCode1", mallOneCommerceCode);
+        addModel("buyOrder1", buyOrderMallOne);
+
+
+
+        return new ModelAndView("webpayplusmall-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/webpayplusmall", method = RequestMethod.POST)
+    public ModelAndView webpayplusMallCreate(HttpServletRequest request,
+                                             @RequestParam("returnUrl") String returnUrl,
+                                             @RequestParam("buyOrder") String buyOrder,
+                                             @RequestParam("sessionId") String sessionId,
+                                             @RequestParam(name="amount1") Double amount1,
+                                             @RequestParam(name="amount2", required = false) Double amount2,
+                                             @RequestParam(name="buyOrder1") String buyOrder1,
+                                             @RequestParam(name="buyOrder2",defaultValue = "") String buyOrder2,
+                                             @RequestParam("commerceCode1")  String commerceCode1,
+                                             @RequestParam(name="commerceCode2", defaultValue = "") String commerceCode2) {
+
+        log.info("Webpay Plus Mall MallTransaction.create");
+
+       // String mallTwoCommerceCode = "597055555537";
         final MallTransactionCreateDetails mallDetails = MallTransactionCreateDetails.build()
-                .add(amountMallOne, mallOneCommerceCode, buyOrderMallOne)
-                .add(amountMallTwo, mallTwoCommerceCode, buyOrderMallTwo);
+                .add(amount1, commerceCode1, buyOrder1);
+        if(amount2!=null && !buyOrder2.equalsIgnoreCase("") && !commerceCode2.equalsIgnoreCase("")){
+            mallDetails.add(amount2, commerceCode2, buyOrder2);
+        }
 
         Map<String, Object> details = new HashMap<>();
         details.put("buyOrder", buyOrder);
-        details.put("buyOrderMallOne", buyOrderMallOne);
-        details.put("buyOrderMallTwo", buyOrderMallTwo);
+        details.put("buyOrderMallOne", buyOrder1);
+        details.put("buyOrderMallTwo", buyOrder2);
         details.put("sessionId", sessionId);
-        details.put("amountMallOne", amountMallOne);
-        details.put("amountMallTwo", amountMallTwo);
+        details.put("amountMallOne", amount1);
+        details.put("amountMallTwo", amount2);
+        details.put("mallOneCommerceCode", commerceCode1);
+        details.put("mallTwpCommerceCode", commerceCode2);
         details.put("returnUrl", returnUrl);
-
         try {
             final WebpayPlusMallTransactionCreateResponse response = WebpayPlus.MallTransaction.create(
                     buyOrder, sessionId, returnUrl, mallDetails);
@@ -77,7 +105,6 @@ public class WebpayPlusMallController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-
         try {
             final WebpayPlusMallTransactionCommitResponse response = WebpayPlus.MallTransaction.commit(tokenWs);
 
@@ -121,7 +148,6 @@ public class WebpayPlusMallController extends BaseController {
         addRequest("child_commerce_code", childCommerceCode);
         addRequest("child_buy_order", childBuyOrder);
         addRequest("amount", amount);
-
         try {
             final WebpayPlusMallTransactionRefundResponse response =
                 WebpayPlus.MallTransaction.refund(token, childBuyOrder, childCommerceCode, amount);
@@ -138,7 +164,6 @@ public class WebpayPlusMallController extends BaseController {
     public ModelAndView webpayplusDeferredStatus(@RequestParam("token_ws") String token){
         cleanModel();
         addRequest("token_ws", token);
-
         try {
             final WebpayPlusMallTransactionStatusResponse response = WebpayPlus.MallTransaction.status(token);
             addModel("response", response);
@@ -147,5 +172,14 @@ public class WebpayPlusMallController extends BaseController {
             return new ErrorController().error();
         }
         return new ModelAndView("webpayplus-status", "model", getModel());
+    }
+
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("C60B616633B57B9D0ACB346E9F3F18B414B702A2FE1172DEDC2F5E16EB9FB433");
+        options.setCommerceCode("34925933");
+        options.setIntegrationType(type);
+
+        return options;
     }
 }

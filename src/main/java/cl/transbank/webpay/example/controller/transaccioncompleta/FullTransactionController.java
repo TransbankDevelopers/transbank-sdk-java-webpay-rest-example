@@ -1,5 +1,8 @@
 package cl.transbank.webpay.example.controller.transaccioncompleta;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.transaccioncompleta.FullTransaction;
 import cl.transbank.transaccioncompleta.model.*;
 import cl.transbank.webpay.example.controller.BaseController;
@@ -18,24 +21,42 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
+
 
 @Controller
 @RequestMapping(value = "/fulltransaction")
 public class FullTransactionController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(FullTransactionController.class);
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public ModelAndView fullTransactionCreate(HttpServletRequest request) {
+    @RequestMapping(value = "/create-form", method = RequestMethod.GET)
+    public ModelAndView createForm(HttpServletRequest request){
 
         log.info("Transaccion completa FullTransaction.create");
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        double amount = 10000;
+        double amount = 1;
         String cardNumber= "4051885600446623";
-        String cardExpirationDate= "23/03";
-        short cvv = 123;
+        String cardExpirationDate= "22/06";
+        short cvv = 456;
+        addModel("buyOrder", buyOrder);
+        addModel("sessionId", sessionId);
+        addModel("amount", amount);
+        addModel("cardNumber", cardNumber);
+        addModel("cardExpirationDate", cardExpirationDate);
+        addModel("cvv", cvv);
+        return new ModelAndView("transaccioncompleta/transaction-create-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public ModelAndView fullTransactionCreate(HttpServletRequest request,
+                                              @RequestParam("buyOrder") String buyOrder,
+                                              @RequestParam("sessionId") String sessionId,
+                                              @RequestParam("amount") double amount,
+                                              @RequestParam(name="cardNumber") String cardNumber,
+                                              @RequestParam("cardExpirationDate") String cardExpirationDate,
+                                              @RequestParam("cvv") short cvv) {
+
+
 
         Map<String, Object> details = new HashMap<>();
         details.put("buyOrder", buyOrder);
@@ -44,9 +65,9 @@ public class FullTransactionController extends BaseController {
         details.put("cardNumber", cardNumber);
         details.put("cardExpirationDate", cardExpirationDate);
         details.put("cvv", cvv);
-
         try {
             FullTransactionCreateResponse response = FullTransaction.Transaction.create(buyOrder, sessionId, amount, cardNumber, cardExpirationDate, cvv);
+
             details.put("token", response.getToken());
         } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -68,7 +89,6 @@ public class FullTransactionController extends BaseController {
         details.put("token_ws", tokenWs);
         details.put("deferred_period_index", deferredPeriodIndex);
         details.put("grace_period", gracePeriod);
-
         try {
             final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs,idQueryInstallments,deferredPeriodIndex,gracePeriod);
 
@@ -91,7 +111,6 @@ public class FullTransactionController extends BaseController {
         addRequest("token", token);
         addRequest("installmentsNumber", installmentsNumber);
         System.out.println("Installments Number:"+installmentsNumber);
-
         try {
             final FullTransactionInstallmentResponse response = FullTransaction.Transaction.installment(token, installmentsNumber);
             addModel("response", response);
@@ -110,7 +129,6 @@ public class FullTransactionController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-
         try {
             final FullTransactionStatusResponse response = FullTransaction.Transaction.status(tokenWs);
 
@@ -140,8 +158,6 @@ public class FullTransactionController extends BaseController {
         cleanModel();
         addRequest("token_ws", tokenWs);
         addRequest("amount", amount);
-
-
         try {
             final FullTransactionRefundResponse response = FullTransaction.Transaction.refund(tokenWs,amount);
             log.debug(String.format("response : %s", response.getResponseCode()));
@@ -159,6 +175,15 @@ public class FullTransactionController extends BaseController {
         String endpoint = request.getRequestURL().toString().replace("-form", "");
         addModel("endpoint", endpoint);
         return new ModelAndView("transaccioncompleta/transaction-refund-form", "model", getModel());
+    }
+
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("6E55588C0ECC5507DDE234738FB130F79AD4CD9FD8B875911963D990F7342A8D");
+        options.setCommerceCode("597034925658");
+        options.setIntegrationType(type);
+
+        return options;
     }
 
 }

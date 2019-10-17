@@ -32,27 +32,67 @@ public class PatpassComercioController extends BaseController {
         prepareLoger(Level.ALL);
     }
 
-    @RequestMapping(value = "/start", method = RequestMethod.GET)
-    public ModelAndView start(HttpServletRequest request) {
-        logger.info("PatpassComercio.Inscription.start");
+    @RequestMapping(value = {"/start-form"}, method = RequestMethod.GET)
+    public ModelAndView startForm(HttpServletRequest request) {
 
-       String url = request.getRequestURL().toString().replace("start","end-subscription");
+        String url = request.getRequestURL().toString().replace("start-form","end-subscription");
         String name = "nombre";
         String firstLastName = "apellido";
         String secondLastName = "sapellido";
         String rut = "14140066-5";
         String serviceId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String finalUrl = request.getRequestURL().toString().replace("start","voucher-generated");
+        String finalUrl = request.getRequestURL().toString().replace("start-form","voucher-generated");
         String commerceCode = "28299257";
-        double maxAmount = 0;
+        double maxAmount = 1000;
         String phoneNumber = "123456734";
         String mobileNumber = "123456723";
         String patpassName = "nombre del patpass";
-        String personEmail = "alba.cardenas@continuum.cl";
-        String commerceEmail = "alba.cardenas@continuum.cl";
+        String personEmail = "person@email.com";
+        String commerceEmail = "commerce@email.com";
         String address = "huerfanos 101";
         String city = "Santiago";
 
+        addModel("url", url);
+        addModel("name", name);
+        addModel("firstLastName", firstLastName);
+        addModel("secondLastName", secondLastName);
+        addModel("rut", rut);
+        addModel("serviceId", serviceId);
+        addModel("finalUrl", finalUrl);
+        addModel("commerceCode", commerceCode);
+        addModel("maxAmount", maxAmount);
+        addModel("phoneNumber", phoneNumber);
+        addModel("mobileNumber", mobileNumber);
+        addModel("patpassName", patpassName);
+        addModel("personEmail", personEmail);
+        addModel("commerceEmail", commerceEmail);
+        addModel("address", address);
+        addModel("city", city);
+
+
+
+        return new ModelAndView("patpasscomercio/patpass-comercio-start-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/start", method = RequestMethod.POST)
+    public ModelAndView start(HttpServletRequest request,
+                              @RequestParam("url") String url,
+                              @RequestParam("name") String name,
+                              @RequestParam("firstLastName") String firstLastName,
+                              @RequestParam("secondLastName") String secondLastName,
+                              @RequestParam("rut") String rut,
+                              @RequestParam("serviceId") String serviceId,
+                              @RequestParam("finalUrl") String finalUrl,
+                              @RequestParam("commerceCode") String commerceCode,
+                              @RequestParam("maxAmount") double maxAmount,
+                              @RequestParam("phoneNumber") String phoneNumber,
+                              @RequestParam("mobileNumber") String mobileNumber,
+                              @RequestParam("patpassName") String patpassName,
+                              @RequestParam("personEmail") String personEmail,
+                              @RequestParam("commerceEmail") String commerceEmail,
+                              @RequestParam("address") String address,
+                              @RequestParam("city") String city) {
+        logger.info("PatpassComercio.Inscription.start");
 
         // clean model
         cleanModel();
@@ -75,10 +115,6 @@ public class PatpassComercioController extends BaseController {
 
         try {
             // call the SDK
-            Options options = new PatpassOptions();
-            options.setApiKey("cxxXQgGD9vrVe4M41FIt");
-            options.setCommerceCode("28299257");
-            options.setIntegrationType(IntegrationType.TEST);
             final PatpassComercioInscriptionStartResponse response = PatpassComercio.Inscription.start(url,
                     name,
                     firstLastName,
@@ -93,8 +129,7 @@ public class PatpassComercioController extends BaseController {
                     personEmail,
                     commerceEmail,
                     address,
-                    city,
-                    options);
+                    city);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -127,11 +162,7 @@ public class PatpassComercioController extends BaseController {
         cleanModel();
         addRequest("token_ws", token);
         try {
-            Options options = new PatpassOptions();
-            options.setApiKey("cxxXQgGD9vrVe4M41FIt");
-            options.setCommerceCode("28299257");
-            options.setIntegrationType(IntegrationType.LIVE);
-            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token,options);
+            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token);
             addModel("response", response);
             addModel("token", token);
         } catch (Exception e) {
@@ -144,5 +175,14 @@ public class PatpassComercioController extends BaseController {
     @RequestMapping(value = {"/voucher-generated"}, method = RequestMethod.POST)
     public ModelAndView voucherGenerated( HttpServletRequest request) {
         return new ModelAndView("patpasscomercio/patpass-comercio-end-voucher", "model", getModel());
+    }
+
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("cxxXQgGD9vrVe4M41FIt");
+        options.setCommerceCode("28299257");
+        options.setIntegrationType(type);
+
+        return options;
     }
 }

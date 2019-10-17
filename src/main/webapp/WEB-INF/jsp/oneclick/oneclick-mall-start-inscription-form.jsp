@@ -14,24 +14,25 @@
     </ol>
     </nav>
 
-<div class="alert alert-warning" role="alert">
-    <h3>Request:</h3>
-    <c:forEach var="request" items="${model.request}">
-        [<c:out value="${request.key}"/>] = <c:out value="${request.value}"/>,
-    </c:forEach>
-</div>
-<div class="alert alert-primary" role="alert">
-    <h3>Response:</h3>
-    ${model.response}
-</div>
-<br>
-<p><samp>Session successfully started with Oneclick Mall</samp></p>
-<br>
-<form action="${model.url_webpay}" method="post">
-    <input type="hidden" name="TBK_TOKEN" value="${model.tbk_token}">
-    <input type="submit" value="Start Oneclick Inscription">
-</form>
-<br>
+
+    <div class="card">
+    <div class="card-body col-sm-6">
+    <form id="formulario" action="start" method="POST">
+    <legend>Formulario de Creaci&oacute;n</legend>
+    <div class="form-group">
+    <label>username:</label><input name="username" type="text" class="form-control" value="${model.username}"/>
+    </div>
+    <div class="form-group">
+    <label>email:</label><input name="email" type="text" class="form-control" value="${model.email}"/>
+    </div>
+    <div class="form-group">
+    <label>responseUrl:</label><input name="responseUrl" type="text" class="form-control" value="${model.responseUrl}"/>
+    </div>
+    <input name="enviar" type="submit" value="Enviar" class="btn btn-primary" />
+    </form>
+    </div>
+    </div>
+
 
 <a href="/">&laquo; Back Index</a>
 </body>

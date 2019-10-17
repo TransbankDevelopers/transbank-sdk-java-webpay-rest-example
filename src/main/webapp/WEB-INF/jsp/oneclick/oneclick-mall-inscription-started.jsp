@@ -2,15 +2,15 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Oneclick Mall - Delete Inscription</title>
+    <title>Oneclick Mall - Start Inscription</title>
     <jsp:include page="../template/header.jsp"/>
 </head>
 
 <body class="container">
     <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="#">Oneclick Mall - Delete Inscription</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Step: <strong>Delete</strong></li>
+    <li class="breadcrumb-item"><a href="#">Oneclick Mall - Start Inscription</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Step: <strong>Start </strong></li>
     </ol>
     </nav>
 
@@ -24,8 +24,11 @@
     <h3>Response:</h3>
     ${model.response}
 </div>
-
 <br>
+<form action="${model.url_webpay}" method="post">
+    <input type="hidden" name="TBK_TOKEN" value="${model.tbk_token}">
+    <input type="submit" value="Start Oneclick Inscription">
+</form>
 <br>
 
 <a href="/">&laquo; Back Index</a>

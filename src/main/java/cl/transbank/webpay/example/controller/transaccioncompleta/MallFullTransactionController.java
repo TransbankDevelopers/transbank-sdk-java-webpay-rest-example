@@ -1,6 +1,9 @@
 package cl.transbank.webpay.example.controller.transaccioncompleta;
 
+import cl.transbank.common.IntegrationType;
+import cl.transbank.common.Options;
 import cl.transbank.model.MallTransactionCreateDetails;
+import cl.transbank.patpass.PatpassOptions;
 import cl.transbank.transaccioncompleta.FullTransaction;
 import cl.transbank.transaccioncompleta.MallFullTransaction;
 import cl.transbank.transaccioncompleta.model.*;
@@ -28,25 +31,49 @@ import java.util.logging.Level;
 public class MallFullTransactionController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(MallFullTransactionController.class);
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public ModelAndView fullTransactionCreate(HttpServletRequest request) {
-
+    @RequestMapping(value = "/create-form", method = RequestMethod.GET)
+    public ModelAndView createForm(HttpServletRequest request){
         log.info("Transaccion completa Mall FullTransaction.create");
         String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String cardNumber= "4051885600446623";
         String cardExpirationDate= "23/03";
+        String commerceCode = "597055555552";
+        String buyOrderTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+        addModel("buyOrder", buyOrder);
+        addModel("sessionId", sessionId);
+        addModel("cardNumber", cardNumber);
+        addModel("cardExpirationDate", cardExpirationDate);
+        addModel("commerceCode", commerceCode);
+        addModel("amount", 1);
+        addModel("commerceCode", commerceCode);
+        addModel("buyOrderTwo", buyOrderTwo);
+        return new ModelAndView("transaccioncompleta/mall-transaction-create-form", "model", getModel());
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public ModelAndView fullTransactionCreate(HttpServletRequest request,
+                                              @RequestParam("buyOrder") String buyOrder,
+                                              @RequestParam("sessionId") String sessionId,
+                                              @RequestParam("amount") double amount,
+                                              @RequestParam("cardNumber") String cardNumber,
+                                              @RequestParam("cardExpirationDate") String cardExpirationDate,
+                                              @RequestParam("commerceCode") String commerceCode,
+                                              @RequestParam("buyOrderTwo") String buyOrderTwo) {
+
+
 
         Map<String, Object> details = new HashMap<>();
         details.put("buyOrder", buyOrder);
         details.put("sessionId", sessionId);
         details.put("cardNumber", cardNumber);
         details.put("cardExpirationDate", cardExpirationDate);
-        details.put("commerceCode", "597055555552");
-
+        details.put("commerceCode", commerceCode);
+        details.put("amount", amount);
+        details.put("buyOrderTwo", buyOrderTwo);
         try {
             MallFullTransactionCreateResponse response = MallFullTransaction.Transaction.create(buyOrder, sessionId, cardNumber, cardExpirationDate, MallTransactionCreateDetails.build()
-                    .add(1000, "597055555552", buyOrder));
+                    .add(amount, commerceCode, buyOrder));
             details.put("token", response.getToken());
         } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -70,7 +97,6 @@ public class MallFullTransactionController extends BaseController {
         System.out.println("Installments Number:"+installmentsNumber);
 
         MallFullTransactionInstallmentsDetails installmentsDetails = MallFullTransactionInstallmentsDetails.build().add(commerceCode, buyOrder, installmentsNumber);
-
         try {
             final MallFullTransactionInstallmentsResponse response = MallFullTransaction.Transaction.installment(token,installmentsDetails);
             addModel("response", response);
@@ -103,7 +129,6 @@ public class MallFullTransactionController extends BaseController {
         details.put("commerceCode", commerceCode);
 
         MallTransactionCommitDetails details2 = MallTransactionCommitDetails.build().add(commerceCode,buyOrder,idQueryInstallments,deferredPeriodIndex,gracePeriod);
-
         try {
             final MallFullTransactionCommitResponse response = MallFullTransaction.Transaction.commit(tokenWs,details2);
 
@@ -124,7 +149,6 @@ public class MallFullTransactionController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-
         try {
             final MallFullTransactionStatusResponse response = MallFullTransaction.Transaction.status(tokenWs);
 
@@ -160,7 +184,6 @@ public class MallFullTransactionController extends BaseController {
         addRequest("commerceCode", commerceCode);
         addRequest("buyOrder", buyOrder);
 
-
         try {
             final MallFullTransactionRefundResponse response = MallFullTransaction.Transaction.refund(tokenWs,amount,commerceCode,buyOrder);
             log.debug(String.format("response : %s", response.getResponseCode()));
@@ -178,6 +201,15 @@ public class MallFullTransactionController extends BaseController {
         String endpoint = request.getRequestURL().toString().replace("-form", "");
         addModel("endpoint", endpoint);
         return new ModelAndView("transaccioncompleta/mall-transaction-refund-form", "model", getModel());
+    }
+
+    private Options getOptions(IntegrationType type){
+        Options options = new PatpassOptions();
+        options.setApiKey("6E55588C0ECC5507DDE234738FB130F79AD4CD9FD8B875911963D990F7342A8D");
+        options.setCommerceCode("597034925658");
+        options.setIntegrationType(type);
+
+        return options;
     }
 
 }

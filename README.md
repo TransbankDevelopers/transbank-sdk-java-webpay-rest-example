@@ -6,7 +6,7 @@ El siguiente proyecto es una simulacion de un ecommerce el cual utiliza los dist
 
 ## Requerimientos
 Para ejecutar el proyecto es necesario tener: 
- ```docker``` y ```docker-compose``` ([como instalar Docker](https://docs.docker.com/install/))
+ ```docker```  ([como instalar Docker](https://docs.docker.com/install/))
 
 ## Clonar o bajar proyecto desde github
 
@@ -15,19 +15,22 @@ Para ejecutar el proyecto es necesario tener:
 ## Ejecutar ejemplo
 Con el código fuente del proyecto en tu computador, puedes ejecutar en la raíz del proyecto el comando para construir el contenedor docker, si es la primera vez que ejecutas el proyecto:
 ```bash
-docker-compose build
+./docker-build
 ```
-Luego, es necesario instalar las dependencias:
-```bash
-docker-compose run web composer install
-```
+
 Finalmente, para correr el proyecto de ejemplo:
 ```
-docker-compose run --service-ports web php artisan serve --host=0.0.0.0 --port=8000
+./docker-run
 ```
-También puedes iniciar el proyecto simplemente ejecutando el archivo `run.sh` en la raíz del proyecto
 
-En ambos casos el proyecto se ejecutará en http://localhost:8000 (y fallará en caso de que el puerto 8000 no esté disponible)
+Cuando quieras detener el docker simplemente corre el siguiente script en la raíz del proyecto:
+```
+./docker-stop
+```
+
+También puedes iniciar el proyecto simplemente ejecutando el archivo `./docker-run` en la raíz del proyecto
+
+En ambos casos el proyecto se ejecutará en http://localhost:8080 (y fallará en caso de que el puerto 8080 no esté disponible)
 
 Puedes mirar el SDK de Java aqui [SDK Rest Java](https://github.com/TransbankDevelopers/transbank-sdk-java)
 

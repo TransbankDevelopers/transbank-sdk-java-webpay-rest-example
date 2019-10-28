@@ -75,10 +75,6 @@ public class PatpassComercioController extends BaseController {
 
         try {
             // call the SDK
-            Options options = new PatpassOptions();
-            options.setApiKey("cxxXQgGD9vrVe4M41FIt");
-            options.setCommerceCode("28299257");
-            options.setIntegrationType(IntegrationType.TEST);
             final PatpassComercioInscriptionStartResponse response = PatpassComercio.Inscription.start(url,
                     name,
                     firstLastName,
@@ -93,8 +89,7 @@ public class PatpassComercioController extends BaseController {
                     personEmail,
                     commerceEmail,
                     address,
-                    city,
-                    options);
+                    city);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -127,11 +122,7 @@ public class PatpassComercioController extends BaseController {
         cleanModel();
         addRequest("token_ws", token);
         try {
-            Options options = new PatpassOptions();
-            options.setApiKey("cxxXQgGD9vrVe4M41FIt");
-            options.setCommerceCode("28299257");
-            options.setIntegrationType(IntegrationType.LIVE);
-            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token,options);
+            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token);
             addModel("response", response);
             addModel("token", token);
         } catch (Exception e) {

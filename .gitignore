@@ -9,3 +9,6 @@ dependency-reduced-pom.xml
 .settings/
 .vscode
 Test.java
+.gradle
+build
+gradle

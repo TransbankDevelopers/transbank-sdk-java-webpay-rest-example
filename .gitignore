@@ -23,7 +23,6 @@ Test.java
 .mtj.tmp/
 
 # Package Files #
-gradle/wrapper/gradle-wrapper.jar
 *.war
 *.nar
 *.ear

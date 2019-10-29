@@ -3,13 +3,8 @@
  */
 
 buildscript {
-
     repositories {
         mavenLocal()
-    }
-    dependencies {
-        classpath('com.github.transbankdevelopers:transbank-sdk-java:1.7.0-SNAPSHOT')
-
     }
 }
 
@@ -38,9 +33,11 @@ repositories {
     maven {
         url = 'http://repo.maven.apache.org/maven2'
     }
+
 }
 
 dependencies {
+    implementation files('lib/transbank-sdk-java-1.7.0-SNAPSHOT.jar')
     implementation ('org.springframework.boot:spring-boot-starter-web') {
         exclude module: 'spring-boot-starter-logging'
     }
@@ -52,7 +49,6 @@ dependencies {
     }
     implementation 'javax.servlet:jstl:1.2'
     implementation 'com.google.code.gson:gson:2.6.2'
-    implementation 'com.github.transbankdevelopers:transbank-sdk-java:1.7.0-SNAPSHOT'
     implementation 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     annotationProcessor 'org.projectlombok:lombok'
@@ -60,6 +56,7 @@ dependencies {
     implementation "com.sun.xml.bind:jaxb-core:2.3.0"
     implementation "com.sun.xml.bind:jaxb-impl:2.3.0"
     implementation "javax.activation:activation:1.1.1"
+    implementation 'org.slf4j:slf4j-log4j12:1.7.25'
 }
 
 apply plugin: 'org.springframework.boot'

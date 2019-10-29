@@ -12,6 +12,5 @@ FROM openjdk:8u181-jdk-alpine
 
 COPY --from=build /app/src/build/libs/transbank-sdk-java-webpay-rest-example-0.0.1-SNAPSHOT.war /app/
 
-EXPOSE 8080
 
 ENTRYPOINT ["java", "-Duser.timezone=UTC", "-jar","/app/transbank-sdk-java-webpay-rest-example-0.0.1-SNAPSHOT.war"]

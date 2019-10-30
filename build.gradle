@@ -10,7 +10,6 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'maven-publish'
     id 'org.springframework.boot' version '2.1.9.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 }
@@ -33,7 +32,6 @@ repositories {
     maven {
         url = 'http://repo.maven.apache.org/maven2'
     }
-
 }
 
 dependencies {
@@ -41,7 +39,7 @@ dependencies {
     implementation ('org.springframework.boot:spring-boot-starter-web') {
         exclude module: 'spring-boot-starter-logging'
     }
-        compileOnly 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation ('org.springframework.boot:spring-boot-starter'){
@@ -57,22 +55,10 @@ dependencies {
     implementation "com.sun.xml.bind:jaxb-impl:2.3.0"
     implementation "javax.activation:activation:1.1.1"
     implementation 'org.slf4j:slf4j-log4j12:1.7.25'
-    compile 'com.github.jsimone:webapp-runner:8.5.11.3'
+    //compile 'com.github.jsimone:webapp-runner:8.5.11.3'
 }
-
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-//apply plugin: 'jar'
 
 group = 'com.github.transbankdevelopers'
 version = '0.0.1-SNAPSHOT'
 description = 'transbank-sdk-java-webpay-rest-example'
 sourceCompatibility = '1.8'
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}

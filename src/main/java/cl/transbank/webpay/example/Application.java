@@ -5,28 +5,27 @@ import cl.transbank.patpass.PatpassComercio;
 import cl.transbank.transaccioncompleta.FullTransaction;
 import cl.transbank.webpay.oneclick.OneclickMall;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
 @SpringBootApplication
-public class Application implements CommandLineRunner {
+public class Application {
 
     @Autowired
     ConfigProperties config;
 
     public static void main(String[] args) {
 
-        System.out.println("ENV:::: " + System.getenv());
+        System.out.println("ENV: " + System.getenv());
 
-        SpringApplication app = new SpringApplication(Application.class);
-        app.run(args);
+        SpringApplication.run(Application.class, args);
     }
 
-    @Override
-    public void run (String... arg0) throws Exception{
+    @EventListener(ApplicationReadyEvent.class)
+    public void afterStart() throws Exception{
 
         System.out.println("Config: " + config);
 

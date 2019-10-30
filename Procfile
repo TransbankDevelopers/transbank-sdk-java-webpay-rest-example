@@ -1,2 +1,0 @@
-  
-web: spring-boot:run

@@ -57,6 +57,7 @@ dependencies {
     implementation "com.sun.xml.bind:jaxb-impl:2.3.0"
     implementation "javax.activation:activation:1.1.1"
     implementation 'org.slf4j:slf4j-log4j12:1.7.25'
+    compile 'com.github.jsimone:webapp-runner:8.5.11.3'
 }
 
 apply plugin: 'org.springframework.boot'

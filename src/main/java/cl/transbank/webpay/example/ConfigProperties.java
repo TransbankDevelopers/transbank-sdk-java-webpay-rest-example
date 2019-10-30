@@ -1,5 +1,6 @@
 package cl.transbank.webpay.example;
 
+import lombok.ToString;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import lombok.Setter;
 @Configuration
 @PropertySource("classpath:application.properties")
 @ConfigurationProperties(prefix = "transbank")
+@ToString
 public class ConfigProperties  {
 
     private @Setter @Getter String webpayplusCommerceCode;

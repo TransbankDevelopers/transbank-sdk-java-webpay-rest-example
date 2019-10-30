@@ -18,12 +18,18 @@ public class Application implements CommandLineRunner {
     ConfigProperties config;
 
     public static void main(String[] args) {
+
+        System.out.println("ENV:::: " + System.getenv());
+
         SpringApplication app = new SpringApplication(Application.class);
         app.run(args);
     }
 
     @Override
     public void run (String... arg0) throws Exception{
+
+        System.out.println("Config: " + config);
+
         //WebpayPlus Live config
         WebpayPlus.Transaction.setCommerceCode(config.getWebpayplusCommerceCode());
         WebpayPlus.Transaction.setApiKey(config.getWebpayplusApiKey());

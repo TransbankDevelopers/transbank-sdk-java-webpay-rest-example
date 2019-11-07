@@ -36,7 +36,7 @@ public class Application {
 
         //WebpayPlus.MallTransaction Live config
         WebpayPlus.MallTransaction.setCommerceCode(config.getWebpayplusMallCommerceCode());
-        WebpayPlus.MallTransaction.setApiKey(config.getWebpayplusApiKey());
+        WebpayPlus.MallTransaction.setApiKey(config.getWebpayplusMallApiKey());
         WebpayPlus.MallTransaction.setIntegrationType(IntegrationType.LIVE);
 
         // OneclickMall Live Config

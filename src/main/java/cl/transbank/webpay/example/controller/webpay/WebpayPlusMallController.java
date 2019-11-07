@@ -39,7 +39,7 @@ public class WebpayPlusMallController extends BaseController {
         String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         double amountMallOne = 1;
-        String mallOneCommerceCode = "34925941";
+        String mallOneCommerceCode = "597034918546";
         String returnUrl = request.getRequestURL().toString().replace("-form", "-commit");
 
         addModel("returnUrl", returnUrl);

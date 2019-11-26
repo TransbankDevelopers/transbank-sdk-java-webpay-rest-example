@@ -18,19 +18,34 @@
     <h3>request</h3>
     [amount] = ${details.get("amount")}, [buy_order] = ${details.get("buyOrder")}, [session_id] = ${details.get("sessionId")}, [return_url] = ${details.get("returnUrl")}
 </div>
-<div class="alert alert-primary" role="alert">
-    <h3>result</h3>
-    [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
-</div>
-<br>
-<p><samp>Sesion iniciada con exito en Webpay</samp></p>
-<br>
-<form action="${details.get("url")}" method="POST">
-    <input type="hidden" name="token_ws" value="${details.get("token")}">
-    <input type="submit" value="Ejecutar Pago con Webpay">
-</form>
-<br>
 
+
+<c:set var="val" value="${details.get('token')}"/>
+<c:choose>
+    <c:when test="${val == null}">
+        <div class="alert alert-primary" role="alert">
+            <h3>result</h3>
+            [error] = ${details.get("error")}
+        </div>
+        <br>
+        <p><samp>Sesion Webpay no iniciada</samp></p>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-primary" role="alert">
+            <h3>result</h3>
+            [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
+        </div>
+        <br>
+        <p><samp>Sesion iniciada con exito en Webpay</samp></p>
+        <br>
+        <form action="${details.get("url")}" method="POST">
+            <input type="hidden" name="token_ws" value="${details.get("token")}">
+            <input type="submit" value="Ejecutar Pago con Webpay">
+        </form>
+    </c:otherwise>
+</c:choose>
+
+<br>
 <a href=".">&laquo; volver a index</a>
 </body>
 </html>

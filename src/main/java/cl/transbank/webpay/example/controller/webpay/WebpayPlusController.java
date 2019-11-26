@@ -89,6 +89,7 @@ public class WebpayPlusController extends BaseController {
                 details.put("response", response);
                 details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
             } catch (TransactionCommitException | IOException e) {
+                System.out.println('error '+ e.getMessage());
                 details.put("error", e);
                 log.error(e.getMessage(), e);
             }

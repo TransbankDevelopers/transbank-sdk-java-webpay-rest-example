@@ -78,7 +78,7 @@ public class WebpayPlusController extends BaseController {
     public ModelAndView webpayplusEnd(@RequestParam(name="token_ws",defaultValue = "") String tokenWs, HttpServletRequest request) {
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-        System.out.println('token: '+ tokenWs);
+        System.out.println("token: "+ tokenWs);
         log.info(String.format("token_ws : %s", (tokenWs.isEmpty())));
         if (tokenWs.isEmpty()) {
             details.put("message", "Transacción cancelada");

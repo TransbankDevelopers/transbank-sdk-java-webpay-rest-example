@@ -65,28 +65,34 @@ public class WebpayPlusController extends BaseController {
             final WebpayPlusTransactionCreateResponse response = WebpayPlus.Transaction.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
+            log.error("token", response.getToken().length());
         } catch (TransactionCreateException | IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
+            details.put("error", e);
+            log.error(e.getMessage(), e);
         }
 
         return new ModelAndView("webpayplus", "details", details);
     }
 
     @RequestMapping(value = {"/webpayplus-end"}, method = RequestMethod.POST)
-    public ModelAndView webpayplusEnd(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
-        log.info(String.format("token_ws : %s", tokenWs));
-
+    public ModelAndView webpayplusEnd(@RequestParam(name="token_ws",defaultValue = "") String tokenWs, HttpServletRequest request) {
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", tokenWs);
-        try {
-            final WebpayPlusTransactionCommitResponse response = WebpayPlus.Transaction.commit(tokenWs);
-            log.debug(String.format("response : %s", response));
-            details.put("response", response);
-            details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (TransactionCommitException | IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
+        log.info(String.format("token_ws : %s", (tokenWs.isEmpty())));
+        if (tokenWs.isEmpty()) {
+            details.put("message", "Transacción cancelada");
+        } else {
+            log.info(String.format("token_ws : %s", tokenWs));
+            try {
+                final WebpayPlusTransactionCommitResponse response = WebpayPlus.Transaction.commit(tokenWs);
+                log.debug(String.format("response : %s", response));
+                details.put("response", response);
+                details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
+            } catch (TransactionCommitException | IOException e) {
+                details.put("error", e);
+                log.error(e.getMessage(), e);
+                // return new ErrorController().error();
+            }
         }
 
         return new ModelAndView("webpayplus-end", "details", details);
@@ -167,13 +173,5 @@ public class WebpayPlusController extends BaseController {
             return new ErrorController().error();
         }
         return new ModelAndView("webpayplus-status", "model", getModel());
-    }
-    private Options getOptions(IntegrationType type){
-        Options options = new PatpassOptions();
-        options.setApiKey("2A20B03296717F18C349B2EEDABC6FD4FBBB41E26E772C30BFA4E9B30061AE6E");
-        options.setCommerceCode("597034919178");
-        options.setIntegrationType(type);
-
-        return options;
     }
 }

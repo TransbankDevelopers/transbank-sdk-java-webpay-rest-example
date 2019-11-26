@@ -34,6 +34,6 @@
     <input type="hidden" name="authorization_code" value="${details.get("authorization_code")}">
     <input type="submit" value="Capturar Pago">
 </form>
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
 </body>
 </html>

@@ -35,7 +35,7 @@
     </div>
     </div>
 <br>
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
     <jsp:include page="template/footer.jsp"/>
 </body>
 </html>

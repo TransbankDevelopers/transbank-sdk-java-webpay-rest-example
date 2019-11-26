@@ -33,6 +33,6 @@
     <input type="hidden" name="amount" value="${details.get("child_amount")}">
     <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
 </form>
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
 </body>
 </html>

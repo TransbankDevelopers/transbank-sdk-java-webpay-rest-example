@@ -26,6 +26,6 @@
 </div>
 <br>
 <br>
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
 </body>
 </html>

@@ -28,6 +28,6 @@
 </div>
 <p><samp>Transacci&oacute; capturada en forma exitosa.</samp></p>
 <br>
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
 </body>
 </html>

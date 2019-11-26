@@ -30,6 +30,6 @@
 <br>
 <p><samp>Reembolso realizado con exito.</samp></p>
 <br>
-<a href=".">&laquo; volver a index</a>
+<a href="/">&laquo; volver a index</a>
 </body>
 </html>

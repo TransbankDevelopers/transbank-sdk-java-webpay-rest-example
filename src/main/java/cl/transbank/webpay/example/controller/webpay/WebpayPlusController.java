@@ -91,7 +91,6 @@ public class WebpayPlusController extends BaseController {
             } catch (TransactionCommitException | IOException e) {
                 details.put("error", e);
                 log.error(e.getMessage(), e);
-                // return new ErrorController().error();
             }
         }
 

@@ -74,7 +74,6 @@ public class OneclickMallController extends BaseController {
     public ModelAndView finish(@RequestParam("TBK_TOKEN") String token) {
         logger.info("OneclickMall.Inscription.finish");
         logger.info(String.format("TBK_TOKEN : %s", token));
-        setUserTbkToken(token);
 
         // clean model
         cleanModel();
@@ -90,6 +89,7 @@ public class OneclickMallController extends BaseController {
                 addModel("response", response);
 
                 // add necesary data to make form works
+                setUserTbkToken(response.getTbkUser());
                 addModel("tbk_user", response.getTbkUser());
                 addModel("username", getUsername());
             }

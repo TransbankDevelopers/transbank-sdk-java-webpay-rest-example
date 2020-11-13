@@ -70,7 +70,30 @@ public class FullTransactionController extends BaseController {
         details.put("grace_period", gracePeriod);
 
         try {
-            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs,idQueryInstallments,deferredPeriodIndex,gracePeriod);
+            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs, idQueryInstallments, deferredPeriodIndex, gracePeriod);
+
+            details.put("amount", response.getAmount());
+            log.debug(String.format("response : %s", response));
+            details.put("response", response);
+        } catch (TransactionCommitException | IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+
+        return new ModelAndView("transaccioncompleta/transaction-commit", "details", details);
+    }
+
+    @RequestMapping(value = {"/commit-without-installments"}, method = RequestMethod.POST)
+    public ModelAndView commitWithoutInstallments(@RequestParam("token") String tokenWs, HttpServletRequest request){
+        log.info(String.format("token_ws : %s", tokenWs));
+
+        Boolean gracePeriod = false;
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", tokenWs);
+        details.put("grace_period", gracePeriod);
+        try {
+            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs, null, null,gracePeriod);
 
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));

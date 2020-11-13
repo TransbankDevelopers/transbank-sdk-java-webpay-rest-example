@@ -24,7 +24,8 @@
     <h3>result</h3>
      [token_ws] = ${details.get("token")}
 </div>
-    <div class="card col-sm-4">
+<div class="row">
+<div class="card col-sm-4">
         <div class="card-body">
         <form action="/fulltransaction/status" method="POST">
             <div class="form-row">
@@ -36,8 +37,6 @@
         </form>
         </div>
     </div>
-
-    <br>
     <div class="card col-sm-4">
         <div class="card-body">
             <form action="/fulltransaction/installments" method="POST">
@@ -66,8 +65,16 @@
             </form>
         </div>
     </div>
-
-    <br>
+    <div class="card col-sm-4">
+        <div class="card-body">
+            <form action="/fulltransaction/commit-without-installments" method="POST">
+                Confirmar transaccion sin cuotas
+                <div class="form-row"><input type="hidden" name="token" value="${details.get("token")}"></div>
+                <button type="submit" class="btn btn-primary">Continuar</button>
+            </form>
+        </div>
+    </div>
+</div>
 <a href="/">&laquo; volver a index</a>
     <jsp:include page="../template/footer.jsp"/>
 </body>

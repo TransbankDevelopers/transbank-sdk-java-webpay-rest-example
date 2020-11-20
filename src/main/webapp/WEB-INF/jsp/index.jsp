@@ -35,52 +35,48 @@
                 <td><a href="/webpayplusdeferred-refund-form">Reembolsar Transacci&oacute;n</a></td>
                 <td><a href="/webpayplusdeferred-status-form">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-
             <tr>
                 <td>Webpay Plus Mall Mall Deferred</td>
                 <td><a href="/webpayplusmalldeferred">Crear Transacci&oacute;n</a></td>
                 <td><a href="/webpayplusmalldeferred-refund-form">Reembolsar Transacci&oacute;n</a></td>
                 <td><a href="/webpayplusmalldeferred-status-form">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-
             <tr>
                 <td>Oneclick Mall</td>
                 <td><a href="/oneclick-mall/start">Comenzar Inscripci&oacute;n</a></td>
                 <td><a href="/oneclick-mall/refund-form">Reembolsar Transacci&oacute;n</a></td>
                 <td><a href="/oneclick-mall/status-form">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-
+            <tr>
+                <td>Oneclick Mall Deferred Capture</td>
+                <td><a href="/oneclick-mall-deferred/start">Start Inscription</a></td>
+                <td><a href="/oneclick-mall-deferred/refund-form">Reembolsar Transacci&oacute;n</a></td>
+                <td><a href="/oneclick-mall-deferred/status-form">Consultar Estado Transacci&oacute;n</a></td>
+            </tr>
             <tr>
                 <td>Transacci&oacute;n Completa</td>
                 <td><a href="/fulltransaction/create">Crear Transacci&oacute;n</a></td>
                 <td><a href="/fulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
                 <td><a href="/fulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-
             <tr>
                 <td>Transacci&oacute;n Completa Mall</td>
                 <td><a href="/mallfulltransaction/create">Crear Transacci&oacute;n</a></td>
                 <td><a href="/mallfulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
                 <td><a href="/mallfulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-
             <tr>
                 <td>Patpass-webpay</td>
                 <td><a href="/patpass-webpay/create">Crear Transacci&oacute;n</a></td>
                 <td><a href="/patpass-webpay/refund-form">Reembolsar Transacci&oacute;n</a></td>
                 <td><a href="/patpass-webpay/status-form">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-
             <tr>
                 <td>Patpass Comercio</td>
                 <td><a href="/patpass-comercio/start">Crear Transacci&oacute;n</a></td>
                 <td><a href="#"></a></td>
                 <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
             </tr>
-            <%-- <tr>
-        <td>Oneclick Mall Deferred Capture</td>
-        <td><a href="/oneclick-mall-deferred/start">Start Inscription</a></td>
-    </tr> --%>
         </tbody>
     </table>
     <jsp:include page="template/footer.jsp" />

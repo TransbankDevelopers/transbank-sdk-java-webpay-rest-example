@@ -14,22 +14,17 @@
     </ol>
     </nav>
 
-<div class="alert alert-warning" role="alert">
-    <h3>Request:</h3>
-    <c:forEach var="request" items="${model.request}">
-        [<c:out value="${request.key}"/>] = <c:out value="${request.value}"/>,
-    </c:forEach>
-</div>
-<div class="alert alert-primary" role="alert">
-    <h3>Response:</h3>
-    ${model.response}
-</div>
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
 <br>
 <p><samp>Inscription successfully finished on Oneclick Mall</samp></p>
 <br>
 <form action="/oneclick-mall/authorize" method="post">
-    <input type="hidden" name="username" value="${model.username}">
-    <input type="hidden" name="tbk_user" value="${model.tbk_user}">
+    <input type="hidden" name="username" value="${details.get("username")}">
+    <input type="hidden" name="tbk_user" value="${details.get("tbk_user")}">
     Payment Amount: <input type="text" name="amount" value="1000">
     <input type="submit" value="Authorize Payment">
 </form>

@@ -1,11 +1,11 @@
 package cl.transbank.webpay.example.controller.patpass.comercio;
 
+import cl.transbank.common.IntegrationApiKeys;
+import cl.transbank.common.IntegrationCommerceCodes;
 import cl.transbank.common.IntegrationType;
-import cl.transbank.common.Options;
 import cl.transbank.patpass.PatpassComercio;
-import cl.transbank.patpass.PatpassOptions;
-import cl.transbank.patpass.model.PatpassComercioInscriptionStartResponse;
-import cl.transbank.patpass.model.PatpassComercioTransactionStatusResponse;
+import cl.transbank.patpass.model.PatpassOptions;
+import cl.transbank.patpass.responses.*;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.*;
@@ -28,8 +28,10 @@ public class PatpassComercioController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(PatpassComercioController.class);
 
 
-    public PatpassComercioController() {
+    private PatpassComercio.Inscription inscription;
+    public PatpassComercioController(){
         prepareLoger(Level.ALL);
+        inscription = new PatpassComercio.Inscription(new PatpassOptions(IntegrationCommerceCodes.PATPASS_COMERCIO, IntegrationApiKeys.PATPASS_COMERCIO, IntegrationType.TEST));
     }
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
@@ -44,7 +46,7 @@ public class PatpassComercioController extends BaseController {
         String serviceId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
         String finalUrl = request.getRequestURL().toString().replace("start","voucher-generated");
         String commerceCode = "28299257";
-        double maxAmount = 0;
+        Double maxAmount = null;
         String phoneNumber = "123456734";
         String mobileNumber = "123456723";
         String patpassName = "nombre del patpass";
@@ -75,7 +77,7 @@ public class PatpassComercioController extends BaseController {
 
         try {
             // call the SDK
-            final PatpassComercioInscriptionStartResponse response = PatpassComercio.Inscription.start(url,
+            final PatpassComercioInscriptionStartResponse response = inscription.start(url,
                     name,
                     firstLastName,
                     secondLastName,
@@ -122,7 +124,7 @@ public class PatpassComercioController extends BaseController {
         cleanModel();
         addRequest("token_ws", token);
         try {
-            final PatpassComercioTransactionStatusResponse response = PatpassComercio.Transaction.status(token);
+            final PatpassComercioTransactionStatusResponse response = inscription.status(token);
             addModel("response", response);
             addModel("token", token);
         } catch (Exception e) {

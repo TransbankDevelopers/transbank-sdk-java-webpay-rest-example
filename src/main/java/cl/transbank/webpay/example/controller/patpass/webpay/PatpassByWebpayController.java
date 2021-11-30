@@ -1,16 +1,17 @@
 package cl.transbank.webpay.example.controller.patpass.webpay;
 
+import cl.transbank.common.IntegrationApiKeys;
+import cl.transbank.common.IntegrationCommerceCodes;
+import cl.transbank.common.IntegrationType;
 import cl.transbank.patpass.PatpassByWebpay;
-import cl.transbank.patpass.model.PatpassByWebpayTransactionCommitResponse;
-import cl.transbank.patpass.model.PatpassByWebpayTransactionCreateResponse;
-import cl.transbank.patpass.model.PatpassByWebpayTransactionRefundResponse;
-import cl.transbank.patpass.model.PatpassByWebpayTransactionStatusResponse;
+import cl.transbank.patpass.responses.*;
+
+import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.TransactionCommitException;
 import cl.transbank.webpay.exception.TransactionCreateException;
 import cl.transbank.webpay.exception.TransactionRefundException;
-import cl.transbank.webpay.webpayplus.model.WebpayPlusMallTransactionCommitResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -23,13 +24,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
 @Controller
 @RequestMapping("/patpass-webpay")
 public class PatpassByWebpayController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(PatpassByWebpayController.class);
+
+    private PatpassByWebpay.Transaction tx;
+    public PatpassByWebpayController(){
+        prepareLoger(Level.ALL);
+        tx = new PatpassByWebpay.Transaction(new WebpayOptions(IntegrationCommerceCodes.PATPASS_BY_WEBPAY, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
+    }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView create(HttpServletRequest request) {
@@ -62,8 +68,8 @@ public class PatpassByWebpayController extends BaseController {
         details.put("commerceMail", commerceMail);
 
         try {
-            PatpassByWebpayTransactionCreateResponse response = PatpassByWebpay.Transaction.create(buyOrder, sessionId, 1000, returnUrl, serviceId, cardHolderId, cardHolderName,
-                    cardHolderLastName1, cardHolderLastName2, cardHolderMail, cellphoneNumber, expirationDate, commerceMail, false, null);
+            PatpassByWebpayTransactionCreateResponse response = tx.create(buyOrder, sessionId, 1000, returnUrl, serviceId, cardHolderId, cardHolderName,
+                    cardHolderLastName1, cardHolderLastName2, cardHolderMail, cellphoneNumber, expirationDate, commerceMail, false);
             details.put("token", response.getToken());
             details.put("url", response.getUrl());
         } catch (TransactionCreateException | IOException e) {
@@ -74,7 +80,7 @@ public class PatpassByWebpayController extends BaseController {
         return new ModelAndView("patpasswebpay/patpass-webpay-transaction-create", "details", details);
     }
 
-    @RequestMapping(value = {"/commit"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/commit"}, method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView commit(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
         log.info(String.format("token_ws : %s", tokenWs));
 
@@ -82,7 +88,7 @@ public class PatpassByWebpayController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final PatpassByWebpayTransactionCommitResponse response = PatpassByWebpay.Transaction.commit(tokenWs);
+            final PatpassByWebpayTransactionCommitResponse response = tx.commit(tokenWs);
 
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));
@@ -105,7 +111,7 @@ public class PatpassByWebpayController extends BaseController {
         addRequest("amount", amount);
 
         try {
-            final PatpassByWebpayTransactionRefundResponse response = PatpassByWebpay.Transaction.refund(token, 10);
+            final PatpassByWebpayTransactionRefundResponse response = tx.refund(token, 10);
             addModel("response", response);
         } catch (TransactionRefundException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -121,7 +127,7 @@ public class PatpassByWebpayController extends BaseController {
         addRequest("token_ws", token);
 
         try {
-            final PatpassByWebpayTransactionStatusResponse response = PatpassByWebpay.Transaction.status(token);
+            final PatpassByWebpayTransactionStatusResponse response = tx.status(token);
             addModel("response", response);
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);

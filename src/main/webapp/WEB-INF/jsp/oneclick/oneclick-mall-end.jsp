@@ -24,6 +24,14 @@
     <h3>Response:</h3>
     ${model.response}
 </div>
+
+
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <br>
 <p><samp>Reembolso realizado con exito.</samp></p>
 <br>

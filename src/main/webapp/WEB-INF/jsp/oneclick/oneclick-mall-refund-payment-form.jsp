@@ -14,24 +14,24 @@
     </ol>
     </nav>
 
-<div class="alert alert-warning" role="alert">
-    <h3>Request:</h3>
-    <c:forEach var="request" items="${model.request}">
-        [<c:out value="${request.key}"/>] = <c:out value="${request.value}"/>,
-    </c:forEach>
-</div>
-<div class="alert alert-primary" role="alert">
-    <h3>Response:</h3>
-    ${model.response}
-</div>
+
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <br>
 <p><samp>Payment accepted by Oneclick Mall</samp></p>
 <br>
 <form action="/oneclick-mall/refund" method="post">
-    <input type="hidden" name="buy_order" value="${model.buyOrder}">
-    <input type="hidden" name="child_commerce_code" value="${model.childOneCommerceCode}">
-    <input type="hidden" name="child_buy_order" value="${model.chileOneBuyOrder}">
-    <input type="hidden" name="amount" value="${model.amountMallOne}">
+    buy_order<input type="text" name="buy_order" value="${details.get("buyOrder")}">
+    <br>
+    child_commerce_code<input type="text" name="child_commerce_code" value="${details.get("childOneCommerceCode")}">
+    <br>
+    child_buy_order<input type="text" name="child_buy_order" value="${details.get("chileOneBuyOrder")}">
+    <br>
+    amount<input type="text" name="amount" value="${details.get("amountMallOne")}">
     <input type="submit" value="Refund Oneclick Mall Payment">
 </form>
 <br>

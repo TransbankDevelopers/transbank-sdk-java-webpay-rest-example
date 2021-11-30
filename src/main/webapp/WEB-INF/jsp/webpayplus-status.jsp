@@ -13,16 +13,15 @@
     </ol>
     </nav>
 
-    <div class="alert alert-warning" role="alert">
-    <h3>Request:</h3>
-    <c:forEach var="request" items="${model.request}">
-        [<c:out value="${request.key}"/>] = <c:out value="${request.value}"/>,
-    </c:forEach>
+<div class="alert alert-warning" role="alert">
+    <h3>request</h3>
+    token_ws: ${details.get("token_ws")}
 </div>
-    <div class="alert alert-primary" role="alert">
-    <h3>Response:</h3>
-    ${model.response}
-</div>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
+
 <br>
 <br>
 <a href=".">&laquo; volver a index</a>

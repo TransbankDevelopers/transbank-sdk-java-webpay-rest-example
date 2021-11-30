@@ -1,16 +1,15 @@
 package cl.transbank.webpay.example.controller.webpay;
 
+import cl.transbank.common.IntegrationApiKeys;
+import cl.transbank.common.IntegrationCommerceCodes;
+import cl.transbank.common.IntegrationType;
+import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.TransactionCommitException;
-import cl.transbank.webpay.exception.TransactionCreateException;
-import cl.transbank.webpay.exception.TransactionRefundException;
+import cl.transbank.webpay.exception.*;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
 
-import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionCommitResponse;
-import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionCreateResponse;
-import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionRefundResponse;
-import cl.transbank.webpay.webpayplus.model.WebpayPlusTransactionStatusResponse;
+import cl.transbank.webpay.webpayplus.responses.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,12 +23,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 
 @Controller
 public class WebpayPlusDeferredController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(WebpayPlusDeferredController.class);
+    private WebpayPlus.Transaction tx;
+    public WebpayPlusDeferredController(){
+        tx = new WebpayPlus.Transaction(new WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS_DEFERRED, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
+    }
 
     @RequestMapping(value = "/webpayplusdeferred", method = RequestMethod.GET)
     public ModelAndView webpayplus(HttpServletRequest request) {
@@ -39,16 +40,27 @@ public class WebpayPlusDeferredController extends BaseController {
         String returnUrl = request.getRequestURL().append("-end").toString();
 
         Map<String, Object> details = new HashMap<>();
-        details.put("buyOrder", buyOrder);
-        details.put("sessionId", sessionId);
-        details.put("amount", amount);
-        details.put("returnUrl", returnUrl);
+
+        Map<String, Object> req = new HashMap<>();
+        req.put("buyOrder", buyOrder);
+        req.put("sessionId", sessionId);
+        req.put("amount", amount);
+        req.put("returnUrl", returnUrl);
+
+        details.put("req", toJson(req));
 
         try {
-            final WebpayPlusTransactionCreateResponse response = WebpayPlus.DeferredTransaction.create(buyOrder, sessionId, amount, returnUrl);
+            final WebpayPlusTransactionCreateResponse response = tx.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-        } catch (TransactionCreateException | IOException e) {
+
+            details.put("resp", toJson(response));
+        }
+        catch (TransactionCreateException e) {
+            log.error(e.getLocalizedMessage(), e);
+            details.put("resp", e.getMessage());
+        }
+        catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -56,7 +68,7 @@ public class WebpayPlusDeferredController extends BaseController {
         return new ModelAndView("webpayplus", "details", details);
     }
 
-    @RequestMapping(value = "webpayplusdeferred-end", method = RequestMethod.POST)
+    @RequestMapping(value = "webpayplusdeferred-end", method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView webpayplusEnd(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
         log.info(String.format("token_ws : %s", tokenWs));
 
@@ -64,11 +76,18 @@ public class WebpayPlusDeferredController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final WebpayPlusTransactionCommitResponse response = WebpayPlus.DeferredTransaction.commit(tokenWs);
+            final WebpayPlusTransactionCommitResponse response = tx.commit(tokenWs);
             log.debug(String.format("response : %s", response));
             details.put("response", response);
             details.put("refund-endpoint", request.getRequestURL().toString().replace("-end", "-refund"));
-        } catch (TransactionCommitException | IOException e) {
+
+            details.put("resp", toJson(response));
+        }
+        catch (TransactionCommitException e) {
+            log.error(e.getLocalizedMessage(), e);
+            details.put("resp", e.getMessage());
+        }
+        catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -87,11 +106,16 @@ public class WebpayPlusDeferredController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final WebpayPlusTransactionRefundResponse response = WebpayPlus.DeferredTransaction.refund(tokenWs, amount);
-            log.info(response.toString());
-            log.debug(String.format("response : %s", response));
+            final WebpayPlusTransactionRefundResponse response = tx.refund(tokenWs, amount);
             details.put("response", response);
-        } catch (TransactionRefundException | IOException e) {
+
+            details.put("resp", toJson(response));
+        }
+        catch (TransactionRefundException e) {
+            log.error(e.getLocalizedMessage(), e);
+            details.put("resp", e.getMessage());
+        }
+        catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
@@ -99,18 +123,53 @@ public class WebpayPlusDeferredController extends BaseController {
         return new ModelAndView("webpayplus-refund", "details", details);
     }
 
-    @RequestMapping(value = "/webpayplusdeferred-status", method = RequestMethod.POST)
-    public ModelAndView webpayplusDeferredStatus(@RequestParam("token_ws") String token){
-        cleanModel();
-        addRequest("token_ws", token);
+    @RequestMapping(value= "/webpayplusdeferred-status", method = RequestMethod.POST)
+    public ModelAndView webpayplusStatus(@RequestParam("token_ws") String token){
 
+        Map<String, Object> details = new HashMap<>();
+        details.put("token_ws", token);
         try {
-            final WebpayPlusTransactionStatusResponse response = WebpayPlus.DeferredTransaction.status(token);
-            addModel("response", response);
-        } catch (Exception  e) {
+            final WebpayPlusTransactionStatusResponse response = tx.status(token);
+            details.put("resp", toJson(response));
+        }
+        catch (TransactionStatusException e) {
+            log.error(e.getLocalizedMessage(), e);
+            details.put("resp", e.getMessage());
+        }
+        catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
             return new ErrorController().error();
         }
-        return new ModelAndView("webpayplus-status", "model", getModel());
+        return new ModelAndView("webpayplus-status", "details", details);
+    }
+
+    @RequestMapping(value = "/webpayplusdeferred-capture", method = RequestMethod.POST)
+    public ModelAndView webpayplusDeferredCapture(@RequestParam("token_ws") String tokenWs,
+                                                  @RequestParam("buy_order") String buyOrder,
+                                                  @RequestParam("authorization_code") String authorizationCode,
+                                                  @RequestParam("capture_amount") double amount,
+                                                  HttpServletRequest request) {
+        Map<String, Object> details = new HashMap<>();
+        Map<String, Object> req = new HashMap<>();
+        req.put("buy_order", buyOrder);
+        req.put("token_ws", tokenWs);
+        req.put("authorization_code", authorizationCode);
+        req.put("capture_amount", amount);
+
+        details.put("req", toJson(req));
+        try {
+            final WebpayPlusTransactionCaptureResponse response = tx.capture(tokenWs, buyOrder, authorizationCode, amount);
+
+            details.put("resp", toJson(response));
+        }
+        catch (TransactionCaptureException e) {
+            log.error(e.getLocalizedMessage(), e);
+            details.put("resp", e.getMessage());
+        }
+        catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+            return new ErrorController().error();
+        }
+        return new ModelAndView("webpayplusdeferred-end", "details", details);
     }
 }

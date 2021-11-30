@@ -14,16 +14,13 @@
     </ol>
     </nav>
 
-<div class="alert alert-warning" role="alert">
-    <h3>request</h3>
-    <c:forEach var="detail" items="${details}">
-        [<c:out value="${detail.key}"/>] = <c:out value="${detail.value}"/>,
-    </c:forEach>
-</div>
-<div class="alert alert-primary" role="alert">
-    <h3>result</h3>
-    [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
-</div>
+
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <br>
 <p><samp>Sesion iniciada con exito en Webpay</samp></p>
 <br>

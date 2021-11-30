@@ -18,15 +18,10 @@
     <h3>request</h3>
     [token_ws] = ${details.get("token_ws")}
 </div>
-    <div class="alert alert-primary" role="alert">
-    <h3>result</h3>
-    [type] = ${details.get("response").getType()},
-    [balance] = ${details.get("response").getBalance()},
-    [authorization_code] = ${details.get("response").getAuthorizationCode()},
-    [response_code] = ${details.get("response").getResponseCode()},
-    [authorization_date] = ${details.get("response").getAuthorizationDate()},
-    [nullified_amount] = ${details.get("response").getNullifiedAmount()}
-</div>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <br>
 <p><samp>Reembolso realizado con exito.</samp></p>
 <br>

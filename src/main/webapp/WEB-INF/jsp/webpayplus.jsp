@@ -7,6 +7,7 @@
 </head>
 
 <body class="container">
+
     <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="#">Ejemplos Webpay Plus - Crear Transaccion</a></li>
@@ -14,15 +15,14 @@
     </ol>
     </nav>
 
-<div class="alert alert-warning" role="alert">
-    <h3>request</h3>
-    [amount] = ${details.get("amount")}, [buy_order] = ${details.get("buyOrder")}, [session_id] = ${details.get("sessionId")}, [return_url] = ${details.get("returnUrl")}
-</div>
-<div class="alert alert-primary" role="alert">
-    <h3>result</h3>
-    [url] = ${details.get("url")}, [token_ws] = ${details.get("token")}
-</div>
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <br>
+
 <p><samp>Sesion iniciada con exito en Webpay</samp></p>
 <br>
 <form action="${details.get("url")}" method="POST">

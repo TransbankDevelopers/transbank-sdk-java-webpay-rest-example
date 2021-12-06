@@ -8,7 +8,7 @@
 <body class="container">
     <h1>Ejemplos Webpay</h1>
     <table class="table">
-        <thead class="thead-dark">
+        <thead class="table-dark">
             <tr>
                 <th scope="col">Service</th>
                 <th scope="col">Create</th>
@@ -74,6 +74,12 @@
             <tr>
                 <td>Patpass Comercio</td>
                 <td><a href="/patpass-comercio/start">Crear Transacci&oacute;n</a></td>
+                <td><a href="#"></a></td>
+                <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
+            </tr>
+            <tr>
+                <td>Webpay Plus Modal</td>
+                <td><a href="/modal/webpayplus-modal">Crear Transacci&oacute;n</a></td>
                 <td><a href="#"></a></td>
                 <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
             </tr>

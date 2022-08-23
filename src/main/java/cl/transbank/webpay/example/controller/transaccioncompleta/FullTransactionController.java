@@ -1,10 +1,14 @@
 package cl.transbank.webpay.example.controller.transaccioncompleta;
 
-import cl.transbank.transaccioncompleta.FullTransaction;
-import cl.transbank.transaccioncompleta.model.*;
+import cl.transbank.common.IntegrationApiKeys;
+import cl.transbank.common.IntegrationCommerceCodes;
+import cl.transbank.common.IntegrationType;
+import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.*;
+import cl.transbank.webpay.transaccioncompleta.FullTransaction;
+import cl.transbank.webpay.transaccioncompleta.responses.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -18,13 +22,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 
 @Controller
 @RequestMapping(value = "/fulltransaction")
 public class FullTransactionController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(FullTransactionController.class);
+
+    private FullTransaction tx;
+    public FullTransactionController(){
+        tx = new FullTransaction(new WebpayOptions(IntegrationCommerceCodes.TRANSACCION_COMPLETA, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
+    }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView fullTransactionCreate(HttpServletRequest request) {
@@ -46,7 +53,7 @@ public class FullTransactionController extends BaseController {
         details.put("cvv", cvv);
 
         try {
-            FullTransactionCreateResponse response = FullTransaction.Transaction.create(buyOrder, sessionId, amount, cardNumber, cardExpirationDate, cvv);
+            FullTransactionCreateResponse response = tx.create(buyOrder, sessionId, amount, cvv, cardNumber, cardExpirationDate);
             details.put("token", response.getToken());
         } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -70,7 +77,7 @@ public class FullTransactionController extends BaseController {
         details.put("grace_period", gracePeriod);
 
         try {
-            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs, idQueryInstallments, deferredPeriodIndex, gracePeriod);
+            final FullTransactionCommitResponse response = tx.commit(tokenWs, idQueryInstallments, deferredPeriodIndex, gracePeriod);
 
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));
@@ -93,7 +100,7 @@ public class FullTransactionController extends BaseController {
         details.put("token_ws", tokenWs);
         details.put("grace_period", gracePeriod);
         try {
-            final FullTransactionCommitResponse response = FullTransaction.Transaction.commit(tokenWs, null, null,gracePeriod);
+            final FullTransactionCommitResponse response = tx.commit(tokenWs, null, null,gracePeriod);
 
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));
@@ -116,7 +123,7 @@ public class FullTransactionController extends BaseController {
         System.out.println("Installments Number:"+installmentsNumber);
 
         try {
-            final FullTransactionInstallmentResponse response = FullTransaction.Transaction.installment(token, installmentsNumber);
+            final FullTransactionInstallmentResponse response = tx.installments(token, installmentsNumber);
             addModel("response", response);
             addModel("token", token);
         } catch ( IOException | TransactionInstallmentException e) {
@@ -135,7 +142,7 @@ public class FullTransactionController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final FullTransactionStatusResponse response = FullTransaction.Transaction.status(tokenWs);
+            final FullTransactionStatusResponse response = tx.status(tokenWs);
 
             details.put("amount", response.getAmount());
             log.debug(String.format("response : %s", response));
@@ -166,7 +173,7 @@ public class FullTransactionController extends BaseController {
 
 
         try {
-            final FullTransactionRefundResponse response = FullTransaction.Transaction.refund(tokenWs,amount);
+            final FullTransactionRefundResponse response = tx.refund(tokenWs,amount);
             log.debug(String.format("response : %s", response.getResponseCode()));
             addModel("response", response);
         } catch (IOException | TransactionRefundException e) {

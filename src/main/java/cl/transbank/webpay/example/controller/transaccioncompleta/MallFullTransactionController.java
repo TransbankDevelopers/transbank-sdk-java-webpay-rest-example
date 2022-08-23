@@ -1,12 +1,16 @@
 package cl.transbank.webpay.example.controller.transaccioncompleta;
 
+import cl.transbank.common.IntegrationApiKeys;
+import cl.transbank.common.IntegrationCommerceCodes;
+import cl.transbank.common.IntegrationType;
 import cl.transbank.model.MallTransactionCreateDetails;
-import cl.transbank.transaccioncompleta.FullTransaction;
-import cl.transbank.transaccioncompleta.MallFullTransaction;
-import cl.transbank.transaccioncompleta.model.*;
+import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.example.controller.ErrorController;
 import cl.transbank.webpay.exception.*;
+import cl.transbank.webpay.transaccioncompleta.MallFullTransaction;
+import cl.transbank.webpay.transaccioncompleta.model.MallTransactionCommitDetails;
+import cl.transbank.webpay.transaccioncompleta.responses.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,13 +24,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 
 @Controller
 @RequestMapping(value = "/mallfulltransaction")
 public class MallFullTransactionController extends BaseController {
     private static Logger log = LoggerFactory.getLogger(MallFullTransactionController.class);
+
+    private MallFullTransaction tx;
+    public MallFullTransactionController(){
+        tx = new MallFullTransaction(new WebpayOptions(IntegrationCommerceCodes.TRANSACCION_COMPLETA_MALL_SIN_CVV, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
+    }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView fullTransactionCreate(HttpServletRequest request) {
@@ -45,8 +52,8 @@ public class MallFullTransactionController extends BaseController {
         details.put("commerceCode", "597055555552");
 
         try {
-            MallFullTransactionCreateResponse response = MallFullTransaction.Transaction.create(buyOrder, sessionId, cardNumber, cardExpirationDate, MallTransactionCreateDetails.build()
-                    .add(1000, "597055555552", buyOrder));
+            MallFullTransactionCreateResponse response = tx.create(buyOrder, sessionId, cardNumber, cardExpirationDate, MallTransactionCreateDetails.build()
+                    .add(1000, IntegrationCommerceCodes.TRANSACCION_COMPLETA_MALL_SIN_CVV_CHILD1, buyOrder));
             details.put("token", response.getToken());
         } catch (TransactionCreateException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -72,7 +79,7 @@ public class MallFullTransactionController extends BaseController {
         MallFullTransactionInstallmentsDetails installmentsDetails = MallFullTransactionInstallmentsDetails.build().add(commerceCode, buyOrder, installmentsNumber);
 
         try {
-            final MallFullTransactionInstallmentsResponse response = MallFullTransaction.Transaction.installment(token,installmentsDetails);
+            final MallFullTransactionInstallmentsResponse response = tx.installments(token,installmentsDetails);
             addModel("response", response);
             addModel("token", token);
             addModel("buyOrder", buyOrder);
@@ -105,7 +112,7 @@ public class MallFullTransactionController extends BaseController {
         MallTransactionCommitDetails details2 = MallTransactionCommitDetails.build().add(commerceCode,buyOrder,idQueryInstallments,deferredPeriodIndex,gracePeriod);
 
         try {
-            final MallFullTransactionCommitResponse response = MallFullTransaction.Transaction.commit(tokenWs,details2);
+            final MallFullTransactionCommitResponse response = tx.commit(tokenWs,details2);
 
 
             log.debug(String.format("response : %s", response));
@@ -126,7 +133,7 @@ public class MallFullTransactionController extends BaseController {
         details.put("token_ws", tokenWs);
 
         try {
-            final MallFullTransactionStatusResponse response = MallFullTransaction.Transaction.status(tokenWs);
+            final MallFullTransactionStatusResponse response = tx.status(tokenWs);
 
 
             log.debug(String.format("response : %s", response));
@@ -149,7 +156,7 @@ public class MallFullTransactionController extends BaseController {
     @RequestMapping(value = {"/refund"}, method = RequestMethod.POST)
     public ModelAndView refund(@RequestParam("token") String tokenWs,
                                @RequestParam("amount") double amount,
-                               @RequestParam("commerceCode") String commerceCode,
+                               @RequestParam("commerceCode") String childCommerceCode,
                                @RequestParam("buyOrder") String buyOrder,
                                HttpServletRequest request) {
         log.info(String.format("token_ws : %s", tokenWs));
@@ -157,12 +164,12 @@ public class MallFullTransactionController extends BaseController {
         cleanModel();
         addRequest("token_ws", tokenWs);
         addRequest("amount", amount);
-        addRequest("commerceCode", commerceCode);
+        addRequest("commerceCode", childCommerceCode);
         addRequest("buyOrder", buyOrder);
 
 
         try {
-            final MallFullTransactionRefundResponse response = MallFullTransaction.Transaction.refund(tokenWs,amount,commerceCode,buyOrder);
+            final MallFullTransactionRefundResponse response = tx.refund(tokenWs,buyOrder,childCommerceCode,amount);
             log.debug(String.format("response : %s", response.getResponseCode()));
             addModel("response", response);
         } catch (IOException | TransactionRefundException e) {

@@ -4,7 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Ejemplos Transaccion Completa Mall - Cuotas Transaccion</title>
         <jsp:include page="../template/header.jsp"/>
-        <jsp:include page="../template/footer.jsp"/>
     </head>
 
         <body class="container">

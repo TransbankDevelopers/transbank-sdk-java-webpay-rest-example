@@ -1,5 +1,9 @@
 package cl.transbank.webpay.example.controller.oneclick;
 
+import cl.transbank.common.IntegrationApiKeys;
+import cl.transbank.common.IntegrationCommerceCodes;
+import cl.transbank.common.IntegrationType;
+import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.webpay.exception.InscriptionFinishException;
 import cl.transbank.webpay.exception.InscriptionStartException;
@@ -9,7 +13,7 @@ import cl.transbank.webpay.exception.TransactionRefundException;
 import cl.transbank.webpay.exception.TransactionStatusException;
 import cl.transbank.webpay.oneclick.Oneclick;
 import cl.transbank.webpay.oneclick.model.*;
-import cl.transbank.webpay.oneclick.model.OneclickMallTransactionAuthorizeResponse.Detail;
+import cl.transbank.webpay.oneclick.responses.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,14 +41,18 @@ public class OneclickMallDeferredController extends BaseController {
     @Getter(AccessLevel.PRIVATE)
     private String email = "gonzalo.castillo@continuum.cl";
     @Getter(AccessLevel.PRIVATE)
-    private String mallOneCommerceCode = "597055555548";
+    private String mallOneCommerceCode = IntegrationCommerceCodes.ONECLICK_MALL_DEFERRED_CHILD1;
     @Getter(AccessLevel.PRIVATE)
-    private String mallTwoCommerceCode = "597055555549";
+    private String mallTwoCommerceCode = IntegrationCommerceCodes.ONECLICK_MALL_DEFERRED_CHILD2;
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE) private String userTbkToken;
 
 
-    public OneclickMallDeferredController() {
+    private Oneclick.MallInscription inscription;
+    private Oneclick.MallTransaction tx;
+    public OneclickMallDeferredController(){
         prepareLoger(Level.ALL);
+        tx = new Oneclick.MallTransaction(new WebpayOptions(IntegrationCommerceCodes.ONECLICK_MALL_DEFERRED, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
+        inscription = new Oneclick.MallInscription(new WebpayOptions(IntegrationCommerceCodes.ONECLICK_MALL_DEFERRED, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
     }
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
@@ -64,7 +72,7 @@ public class OneclickMallDeferredController extends BaseController {
 
         try {
             // call the SDK
-            final OneclickMallInscriptionStartResponse response = Oneclick.MallDeferredInscription.start(getUsername(),
+            final OneclickMallInscriptionStartResponse response = inscription.start(getUsername(),
                     getEmail(), responseUrl);
             logger.info(String.format("response : %s", response));
 
@@ -83,7 +91,7 @@ public class OneclickMallDeferredController extends BaseController {
         return new ModelAndView("oneclick/oneclick-mall-deferred-start-inscription-form", "model", getModel());
     }
 
-    @RequestMapping(value = "/finish", method = RequestMethod.POST)
+    @RequestMapping(value = "/finish", method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView finish(@RequestParam("TBK_TOKEN") String token) {
         logger.info("Oneclick.MallDeferredInscription.finish");
         logger.info(String.format("TBK_TOKEN : %s", token));
@@ -96,7 +104,7 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("token", token);
 
         try {
-            final OneclickMallInscriptionFinishResponse response = Oneclick.MallDeferredInscription.finish(token);
+            final OneclickMallInscriptionFinishResponse response = inscription.finish(token);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
@@ -138,13 +146,12 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("details", details);
 
         try {
-            final OneclickMallTransactionAuthorizeResponse response = Oneclick.MallDeferredTransaction
-                    .authorize(username, tbkUser, buyOrder, details);
+            final OneclickMallTransactionAuthorizeResponse response = tx.authorize(username, tbkUser, buyOrder, details);
             logger.info(String.format("response : %s", response));
 
             if (null != response) {
                 addModel("response", response);
-                Detail detail = response.getDetails().get(0);
+                OneclickMallTransactionAuthorizeResponse.Detail detail = response.getDetails().get(0);
                 addModel("buyOrder", buyOrder);
                 addModel("childBuyOrder", detail.getBuyOrder());
                 addModel("commerceCode", detail.getCommerceCode());
@@ -170,7 +177,7 @@ public class OneclickMallDeferredController extends BaseController {
         double doubleAmount = Double.parseDouble(amount);
 
         try {
-            final OneclickMallTransactionCaptureResponse response = Oneclick.MallDeferredTransaction.capture(childCommerceCode, childBuyOrder, authorizationCode, doubleAmount);
+            final OneclickMallTransactionCaptureResponse response = tx.capture(childCommerceCode, childBuyOrder, authorizationCode, doubleAmount);
 
             if (null != response) {
                 logger.info(String.format("response : %s", response));
@@ -204,7 +211,7 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("amount_mall_one", amountMallOne);
 
         try {
-            final OneclickMallTransactionRefundResponse response = Oneclick.MallDeferredTransaction.refund(buyOrder,
+            final OneclickMallTransactionRefundResponse response = tx.refund(buyOrder,
                     childOneCommerceCode, chileOneBuyOrder, amountMallOne);
             logger.info(String.format("response : %s", response));
             if (null != response) {
@@ -223,7 +230,7 @@ public class OneclickMallDeferredController extends BaseController {
 
         addRequest("buy_order", buyOrder);
         try {
-            final OneclickMallTransactionStatusResponse response = Oneclick.MallDeferredTransaction.status(buyOrder);
+            final OneclickMallTransactionStatusResponse response = tx.status(buyOrder);
             if (null != response) {
                 String message = String.format("response : %s", response);
                 logger.info(message);
@@ -246,7 +253,7 @@ public class OneclickMallDeferredController extends BaseController {
         addRequest("tbk_token", getUserTbkToken());
 
         try {
-            Oneclick.MallDeferredInscription.delete(getUsername(), getUserTbkToken());
+            inscription.delete(getUsername(), getUserTbkToken());
         } catch (Exception e) {
             logger.info(e.getMessage());
         }

@@ -18,19 +18,18 @@
     <h3>request</h3>
     token_ws: ${details.get("token_ws")}
 </div>
-<div class="alert alert-primary" role="alert">
-    <h3>result</h3>
-    <c:forEach var="detail" items="${details}">
-        [<c:out value="${detail.key}"/>] = <c:out value="${detail.value}"/>,
-    </c:forEach>
-</div>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
+
 <p><samp>Pago ACEPTADO por webpay</samp></p>
 <br>
 <form action="/webpayplusmall-refund" method="POST">
     <input type="hidden" name="token_ws" value="${details.get("token_ws")}">
-    <input type="hidden" name="child_buy_order" value="${details.get("child_buy_order")}">
-    <input type="hidden" name="child_commerce_code" value="${details.get("child_commerce_code")}">
-    <input type="hidden" name="amount" value="${details.get("child_amount")}">
+    <input type="text" name="child_buy_order" value="${details.get("child_buy_order")}">
+    <input type="text" name="child_commerce_code" value="${details.get("child_commerce_code")}">
+    <input type="text" name="amount" value="${details.get("child_amount")}">
     <input type="submit" value="Reembolsar Transacci&oacute;n (Anular)">
 </form>
 <a href=".">&laquo; volver a index</a>

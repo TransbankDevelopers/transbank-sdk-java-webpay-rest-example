@@ -14,18 +14,12 @@
     </ol>
     </nav>
 
-    <div class="alert alert-warning" role="alert">
-    <h3>request</h3>
-    [token_ws]: ${details.get("token_ws")}, [buy_order]: ${details.get("buy_order")}, [authorization_code]: ${details.get("authorization_code")},
-    [capture_amount]: ${details.get("capture_amount")}
-</div>
-    <div class="alert alert-primary" role="alert">
-    <h3>result</h3>
-    [authorization_code] = ${details.get("response").getAuthorizationCode()},
-    [authorization_date] = ${details.get("response").getAuthorizationDate()},
-    [captured_amount] = ${details.get("response").getCapturedAmount()},
-    [response_code] = ${details.get("response").getResponseCode()}
-</div>
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <p><samp>Transacci&oacute; capturada en forma exitosa.</samp></p>
 <br>
 <a href=".">&laquo; volver a index</a>

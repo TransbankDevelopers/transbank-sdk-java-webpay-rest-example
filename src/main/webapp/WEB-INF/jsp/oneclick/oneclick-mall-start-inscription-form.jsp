@@ -14,21 +14,17 @@
     </ol>
     </nav>
 
-<div class="alert alert-warning" role="alert">
-    <h3>Request:</h3>
-    <c:forEach var="request" items="${model.request}">
-        [<c:out value="${request.key}"/>] = <c:out value="${request.value}"/>,
-    </c:forEach>
-</div>
-<div class="alert alert-primary" role="alert">
-    <h3>Response:</h3>
-    ${model.response}
-</div>
+<h3>request</h3>
+<pre><code class="language-json">${details.get("req")}</code></pre>
+
+<h3>result</h3>
+<pre><code class="language-json">${details.get("resp")}</code></pre>
+
 <br>
 <p><samp>Session successfully started with Oneclick Mall</samp></p>
 <br>
-<form action="${model.url_webpay}" method="post">
-    <input type="hidden" name="TBK_TOKEN" value="${model.tbk_token}">
+<form action="${details.get("url_webpay")}" method="post">
+    <input type="hidden" name="TBK_TOKEN" value="${details.get("tbk_token")}">
     <input type="submit" value="Start Oneclick Inscription">
 </form>
 <br>

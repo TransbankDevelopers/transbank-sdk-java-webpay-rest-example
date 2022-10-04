@@ -126,7 +126,7 @@ public class WebpayPlusModalController extends BaseController {
     }
 
 
-    @RequestMapping(value = {"/webpayplus-modal-status-form","/webpayplusmall-status-form", "/webpayplusdeferred-status-form"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/webpayplus-modal-status-form"}, method = RequestMethod.GET)
     public ModelAndView webpayplusStatusForm(HttpServletRequest request){
         String endpoint = request.getRequestURL().toString().replace("-form", "");
         addModel("endpoint", endpoint);

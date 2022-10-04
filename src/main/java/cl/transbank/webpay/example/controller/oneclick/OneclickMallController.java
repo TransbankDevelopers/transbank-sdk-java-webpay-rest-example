@@ -1,290 +1,174 @@
 package cl.transbank.webpay.example.controller.oneclick;
 
+import cl.transbank.webpay.example.controller.BaseController;
 import cl.transbank.common.IntegrationApiKeys;
 import cl.transbank.common.IntegrationCommerceCodes;
 import cl.transbank.common.IntegrationType;
 import cl.transbank.webpay.common.WebpayOptions;
-import cl.transbank.webpay.example.controller.BaseController;
-import cl.transbank.webpay.exception.*;
 import cl.transbank.webpay.oneclick.Oneclick;
 import cl.transbank.webpay.oneclick.model.*;
 import cl.transbank.webpay.oneclick.responses.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.logging.Level;
 
+
+@Log4j2
 @Controller
-@RequestMapping("/oneclick-mall")
+@RequestMapping("/oneclick_mall")
 public class OneclickMallController extends BaseController {
-    private static Logger log = LoggerFactory.getLogger(OneclickMallController.class);
-
-    @Getter(AccessLevel.PRIVATE) private String username = "goncafa";
-    @Getter(AccessLevel.PRIVATE) private String email = "gonzalo.castillo@continuum.cl";
-    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE) private String userTbkToken;
-    @Getter(AccessLevel.PRIVATE) private String mallOneCommerceCode = IntegrationCommerceCodes.ONECLICK_MALL_CHILD1;
-    @Getter(AccessLevel.PRIVATE) private String mallTwoCommerceCode = IntegrationCommerceCodes.ONECLICK_MALL_CHILD2;
-
     private Oneclick.MallInscription inscription;
     private Oneclick.MallTransaction tx;
+    private String username;
     public OneclickMallController(){
-        prepareLoger(Level.ALL);
         tx = new Oneclick.MallTransaction(new WebpayOptions(IntegrationCommerceCodes.ONECLICK_MALL, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
         inscription = new Oneclick.MallInscription(new WebpayOptions(IntegrationCommerceCodes.ONECLICK_MALL, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
     }
 
-
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView start(HttpServletRequest request) {
-        log.info("OneclickMall.Inscription.start");
+
+        username = "User-" + getRandomNumber();
+        String email = "user." + getRandomNumber() + "@example.cl";
+        String returnUrl = request.getRequestURL().toString().replace("start","finish");
         Map<String, Object> details = new HashMap<>();
-        // clean model
-
-        String responseUrl = request.getRequestURL().toString().replace("/start", "/finish");
-        log.info(String.format("responseUrl : %s", responseUrl));
-
-        // add request to storage in order to send them to the view
-        details.put("username", getUsername());
-        details.put("email", getEmail());
-        details.put("responseUrl", responseUrl);
-
-        Map<String, Object> req = new HashMap<>();
-        req.put("username", username);
-        req.put("email", email);
-        req.put("responseUrl", responseUrl);
-
-        details.put("req", toJson(req));
 
         try {
-            // call the SDK
-            final OneclickMallInscriptionStartResponse response = inscription.start(getUsername(), getEmail(), responseUrl);
-            log.info(String.format("response : %s", response));
-
-            details.put("tbk_token", response.getToken());
-            details.put("url_webpay", response.getUrlWebpay());
-
+            final OneclickMallInscriptionStartResponse response = inscription.start(username, email, returnUrl);
+            details.put("token", response.getToken());
+            details.put("url", response.getUrlWebpay());
             details.put("resp", toJson(response));
-
+            details.put("username", username);
+            details.put("email", email);
+            details.put("returnUrl", returnUrl);
         }
-        catch (InscriptionStartException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return new ModelAndView("oneclick/oneclick-mall-start-inscription-form", "details", details);
+        return new ModelAndView("oneclick_mall/start", "details", details);
     }
-
     @RequestMapping(value = "/finish", method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView finish(@RequestParam("TBK_TOKEN") String token) {
-        log.info("OneclickMall.Inscription.finish");
-        log.info(String.format("TBK_TOKEN : %s", token));
         Map<String, Object> details = new HashMap<>();
-        setUserTbkToken(token);
-
-        Map<String, Object> req = new HashMap<>();
-        req.put("token", token);
-
-        details.put("req", toJson(req));
-
         try {
             final OneclickMallInscriptionFinishResponse response = inscription.finish(token);
-            log.info(String.format("response : %s", response));
-
-            if (null != response) {
-                details.put("response", response);
-
-                // add necesary data to make form works
-                details.put("tbk_user", response.getTbkUser());
-                details.put("username", getUsername());
-            }
+            details.put("token", token);
+            details.put("response", response);
+            details.put("tbk_user", response.getTbkUser());
+            details.put("username", username);
+            details.put("amount1", 1000);
+            details.put("installments1", 0);
+            details.put("amount2", 1000);
+            details.put("installments2", 0);
+            details.put("authorize-endpoint", "/oneclick_mall/authorize");
+            details.put("delete-endpoint", "/oneclick_mall/delete");
 
             details.put("resp", toJson(response));
         }
-        catch (InscriptionFinishException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            e.printStackTrace();
+
+        return new ModelAndView("oneclick_mall/finish", "details", details);
+    }
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public ModelAndView delete(
+            @RequestParam("username") String username,
+            @RequestParam("tbk_user") String tbkUser
+    ){
+        Map<String, Object> details = new HashMap<>();
+        try {
+            inscription.delete(tbkUser, username);
+        }
+        catch (Exception e) {
+            log.error("ERROR", e);
+            details.put("resp", e.getMessage());
         }
 
-        return new ModelAndView("oneclick/oneclick-mall-authorize-payment-form", "details", details);
+        return new ModelAndView("oneclick_mall/delete", "details", details);
     }
-
     @RequestMapping(value = "/authorize", method = RequestMethod.POST)
     public ModelAndView authorize(@RequestParam("username") String username,
                                   @RequestParam("tbk_user") String tbkUser,
-                                  @RequestParam("amount") double amount) {
-        log.info("OneclickMall.Transaction.authorize");
-        log.info(String.format("username : %s", username));
-        log.info(String.format("tbk_user : %s", tbkUser));
+                                  @RequestParam("amount1") double childAmount1,
+                                  @RequestParam("installments1") int installments1,
+                                  @RequestParam("amount2") double childAmount2,
+                                  @RequestParam("installments2") int installments2
+    ) {
         Map<String, Object> details = new HashMap<>();
-        // clean model
-        cleanModel();
 
-        String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+        String buyOrder = "buyOrder_" + getRandomNumber();
+        String buyOrderMallOne = "childBuyOrder1_" + getRandomNumber();
+        String buyOrderMallTwo = "childBuyOrder2_" + getRandomNumber();
+        String childCommerceCode1 = IntegrationCommerceCodes.ONECLICK_MALL_CHILD1;
+        String childCommerceCode2 = IntegrationCommerceCodes.ONECLICK_MALL_CHILD2;
+
         MallTransactionCreateDetails mallDetails = MallTransactionCreateDetails.build()
-                .add(amount, getMallOneCommerceCode(), buyOrderMallOne, (byte) 1)
-                .add(amount, getMallTwoCommerceCode(), buyOrderMallTwo, (byte) 1);
-
-        // add request to storage in order to send them to the view
-        addRequest("buyOrder", buyOrder);
-        addRequest("buyOrderMallOne", buyOrderMallOne);
-        addRequest("buyOrderMallTwo", buyOrderMallTwo);
-        addRequest("details", mallDetails);
-
-        Map<String, Object> req = new HashMap<>();
-        req.put("username", username);
-        req.put("tbkUser", tbkUser);
-        req.put("buyOrder", buyOrder);
-        req.put("details", mallDetails);
-
-        details.put("req", toJson(req));
-
+                .add(childAmount1, childCommerceCode1, buyOrderMallOne, (byte) installments1)
+                .add(childAmount2, childCommerceCode2, buyOrderMallTwo, (byte) installments2);
         try {
             final OneclickMallTransactionAuthorizeResponse response = tx.authorize(username, tbkUser, buyOrder, mallDetails);
-            log.info(String.format("response : %s", response));
-
-            if (null != response) {
-                details.put("response", response);
-
-                details.put("buyOrder", buyOrder);
-                details.put("childOneCommerceCode", getMallOneCommerceCode());
-                details.put("childTwoCommerceCode", getMallTwoCommerceCode());
-                details.put("chileOneBuyOrder", buyOrderMallOne);
-                details.put("chileTwoBuyOrder", buyOrderMallTwo);
-                details.put("amountMallOne", amount);
-                details.put("amountMallTwo", amount);
-            }
-
-            details.put("resp", toJson(response));
+            OneclickMallTransactionAuthorizeResponse.Detail detail = response.getDetails().get(0);
+            addDetailModel(response, detail.getCommerceCode(), response.getBuyOrder(), detail.getBuyOrder(), detail.getAuthorizationCode(), detail.getAmount(), details);
+            details.put("refund-endpoint", "/oneclick_mall/refund");
+            details.put("status-endpoint", "/oneclick_mall/status");
         }
-        catch (TransactionAuthorizeException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return new ModelAndView("oneclick/oneclick-mall-refund-payment-form", "details", details);
+        return new ModelAndView("oneclick_mall/authorize", "details", details);
     }
-
     @RequestMapping(value = "/refund", method = RequestMethod.POST)
     public ModelAndView refund(@RequestParam("buy_order") String buyOrder,
                                @RequestParam("child_commerce_code") String childCommerceCode,
                                @RequestParam("child_buy_order") String childBuyOrder,
                                @RequestParam("amount") double amount) {
-        log.info("OneclickMall.Transaction.refund");
-        log.info(String.format("buy_order : %s", buyOrder));
-        log.info(String.format("child_commerce_code : %s", childCommerceCode));
-        log.info(String.format("child_buy_order : %s", buyOrder));
-        log.info(String.format("amount : %s", amount));
 
         Map<String, Object> details = new HashMap<>();
-        // clean model
-        cleanModel();
-
-        // add request to storage in order to send them to the view
-        addRequest("buy_order", buyOrder);
-        addRequest("child_commerce_code", childCommerceCode);
-        addRequest("child_buy_order", childBuyOrder);
-        addRequest("amount", amount);
-
-        Map<String, Object> req = new HashMap<>();
-        req.put("buyOrder", buyOrder);
-        req.put("childCommerceCode", childCommerceCode);
-        req.put("childBuyOrder", childBuyOrder);
-        req.put("amount", amount);
-
-        details.put("req", toJson(req));
 
         try {
             final OneclickMallTransactionRefundResponse response = tx.refund(buyOrder, childCommerceCode, childBuyOrder, amount);
-            log.info(String.format("response : %s", response));
-
-            if (null != response) {
-                addModel("response", String.format("response : %s", response));
-            }
-            details.put("resp", toJson(response));
+            addDetailModel(response, childCommerceCode, buyOrder, childBuyOrder, null, amount, details);
         }
-        catch (TransactionRefundException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return new ModelAndView("oneclick/oneclick-mall-end", "details", details);
+        return new ModelAndView("oneclick_mall/refund", "details", details);
     }
-
-    @RequestMapping(value = "/refund-form", method = RequestMethod.GET)
-    public ModelAndView refundForm(HttpServletRequest request) {
-        return new ModelAndView("oneclick/oneclick-mall-refund-form", "model", getModel());
-    }
-
-    @RequestMapping(value = "/status-form", method = RequestMethod.GET)
-    public ModelAndView statusForm(HttpServletRequest request){
-        return new ModelAndView("oneclick/oneclick-mall-status-form", "model", getModel());
-    }
-
     @RequestMapping(value = "/status", method = RequestMethod.POST)
-    public ModelAndView statusRequest(@RequestParam("buy_order") String buyOrder){
-        log.info("OneclickMall.Transaction.status");
-        log.info(String.format("buy_order : %s", buyOrder));
-
-        cleanModel();
-
-        addRequest("buy_order", buyOrder);
+    public ModelAndView status(@RequestParam("buy_order") String buyOrder){
+        Map<String, Object> details = new HashMap<>();
         try {
             final OneclickMallTransactionStatusResponse response = tx.status(buyOrder);
-            if (null != response) {
-                String message = String.format("response : %s", response);
-                log.info(message);
-                addModel("response", message);
-            }
-        }catch (TransactionStatusException | IOException e) {
-            e.printStackTrace();
+            details.put("response", response);
+            details.put("resp", toJson(response));
         }
-        return new ModelAndView("oneclick/oneclick-mall-status-request", "model", getModel());
+        catch (Exception e) {
+            log.error("ERROR", e);
+            details.put("resp", e.getMessage());
+        }
+        return new ModelAndView("oneclick_mall/status", "details", details);
     }
-
-    @RequestMapping(value = "/inscription-delete", method = RequestMethod.GET)
-    public ModelAndView inscriptionDelete(){
-        log.info("OneclickMall.Inscription.delete");
-        log.info(String.format("username : %s", getUsername()));
-        log.info(String.format("tbk_token : %s", getUserTbkToken()));
-
-        cleanModel();
-
-        addRequest("username", getUsername());
-        addRequest("tbk_token", getUserTbkToken());
-
-        try {
-            inscription.delete(getUsername(), getUserTbkToken());
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
-
-        return new ModelAndView("oneclick/oneclick-mall-inscription-delete", "model", getModel());
+    private void addDetailModel(Object response, String childCommerceCode, String buyOrder, String childBuyOrder, String authorizationCode, double amount, Map<String, Object> details){
+        details.put("response", response);
+        details.put("child_commerce_code", childCommerceCode);
+        details.put("buy_order", buyOrder);
+        details.put("child_buy_order", childBuyOrder);
+        details.put("authorization_code", authorizationCode);
+        details.put("amount", amount);
+        details.put("resp", toJson(response));
     }
 }

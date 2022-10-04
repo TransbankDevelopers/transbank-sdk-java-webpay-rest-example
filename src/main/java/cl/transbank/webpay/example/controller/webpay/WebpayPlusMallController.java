@@ -5,17 +5,12 @@ import cl.transbank.common.IntegrationCommerceCodes;
 import cl.transbank.common.IntegrationType;
 import cl.transbank.model.MallTransactionCreateDetails;
 import cl.transbank.webpay.common.WebpayOptions;
-import cl.transbank.webpay.example.controller.BaseController;
-import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.TransactionCommitException;
-import cl.transbank.webpay.exception.TransactionCreateException;
-import cl.transbank.webpay.exception.TransactionRefundException;
-import cl.transbank.webpay.exception.TransactionStatusException;
+import cl.transbank.webpay.webpayplus.responses.*;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
 
-import cl.transbank.webpay.webpayplus.responses.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cl.transbank.webpay.example.controller.BaseController;
+
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,31 +18,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
+@Log4j2
 @Controller
 public class WebpayPlusMallController extends BaseController {
-    private static Logger log = LoggerFactory.getLogger(WebpayPlusMallController.class);
     private WebpayPlus.MallTransaction tx;
     public WebpayPlusMallController(){
         tx = new WebpayPlus.MallTransaction(new WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS_MALL, IntegrationApiKeys.WEBPAY, IntegrationType.TEST));
     }
 
-
-    @RequestMapping(value = "/webpayplusmall", method = RequestMethod.GET)
-    public ModelAndView webpayplusMallCreate(HttpServletRequest request) {
+    @RequestMapping(value = "/webpay_plus_mall/create", method = RequestMethod.GET)
+    public ModelAndView create(HttpServletRequest request) {
 
         log.info("Webpay Plus Mall MallTransaction.create");
-        String buyOrder = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallOne = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String buyOrderMallTwo = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String sessionId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+        String buyOrder = "buyOrder_" + getRandomNumber();
+        String buyOrderMallOne = "childBuyOrder_" + getRandomNumber();
+        String buyOrderMallTwo = "childBuyOrder_" + getRandomNumber();
+        String sessionId = "sessionId_" + getRandomNumber();
         double amountMallOne = 1000;
         double amountMallTwo = 1000;
-        String returnUrl = request.getRequestURL().append("-commit").toString();
+        String returnUrl = request.getRequestURL().toString().replace("create","commit");
 
         String mallOneCommerceCode = IntegrationCommerceCodes.WEBPAY_PLUS_MALL_CHILD1;
         String mallTwoCommerceCode = IntegrationCommerceCodes.WEBPAY_PLUS_MALL_CHILD2;
@@ -57,41 +49,32 @@ public class WebpayPlusMallController extends BaseController {
 
         Map<String, Object> details = new HashMap<>();
 
-        Map<String, Object> req = new HashMap<>();
-        req.put("buyOrder", buyOrder);
-        req.put("buyOrderMallOne", buyOrderMallOne);
-        req.put("buyOrderMallTwo", buyOrderMallTwo);
-        req.put("sessionId", sessionId);
-        req.put("amountMallOne", amountMallOne);
-        req.put("amountMallTwo", amountMallTwo);
-        req.put("returnUrl", returnUrl);
-        req.put("details", mallDetails);
-
-        details.put("req", toJson(req));
-
         try {
             final WebpayPlusMallTransactionCreateResponse response = tx.create(
                     buyOrder, sessionId, returnUrl, mallDetails);
 
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-
             details.put("resp", toJson(response));
+
+            details.put("childCommerceCode1", mallOneCommerceCode);
+            details.put("childBuyOrder1", buyOrderMallOne);
+            details.put("amount1", amountMallOne);
+
+            details.put("childCommerceCode2", mallTwoCommerceCode);
+            details.put("childBuyOrder2", buyOrderMallTwo);
+            details.put("amount2", amountMallTwo);
         }
-        catch (TransactionCreateException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
-        }
 
-        return new ModelAndView("webpayplusmall-create", "details", details);
+        return new ModelAndView("webpay_plus_mall/create", "details", details);
     }
 
-    @RequestMapping(value = {"/webpayplusmall-commit"}, method = { RequestMethod.GET, RequestMethod.POST })
-    public ModelAndView webpayplusEnd(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
+    @RequestMapping(value = "/webpay_plus_mall/commit", method = { RequestMethod.GET, RequestMethod.POST })
+    public ModelAndView commit(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
         log.info(String.format("token_ws : %s", tokenWs));
 
         Map<String, Object> details = new HashMap<>();
@@ -100,78 +83,47 @@ public class WebpayPlusMallController extends BaseController {
         try {
             final WebpayPlusMallTransactionCommitResponse response = tx.commit(tokenWs);
 
-            double amount = 0;
-            for (WebpayPlusMallTransactionCommitResponse.Detail detail : response.getDetails()) {
-                amount += detail.getAmount();
-            }
-            details.put("amount", amount);
-            details.put("child_commerce_code", response.getDetails().get(0).getCommerceCode());
-            details.put("child_buy_order", response.getDetails().get(0).getBuyOrder());
-            details.put("child_amount", response.getDetails().get(0).getAmount());
-
-            log.debug(String.format("response : %s", response));
             details.put("response", response);
-            details.put("refund-endpoint", request.getRequestURL().toString().replace("-commit", "-refund"));
+            WebpayPlusMallTransactionStatusResponse.Detail detail = response.getDetails().get(0);
+            details.put("token_ws", tokenWs);
+            details.put("amount", detail.getAmount());
+            details.put("authorization_code", detail.getAuthorizationCode());
+            details.put("child_buy_order", detail.getBuyOrder());
+            details.put("child_commerce_code", detail.getCommerceCode());
 
-
+            details.put("refund-endpoint", "/webpay_plus_mall/refund");
+            details.put("status-endpoint", "/webpay_plus_mall/status");
             details.put("resp", toJson(response));
         }
-        catch (TransactionCommitException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
-        }
 
-        return new ModelAndView("webpayplusmall-commit", "details", details);
+        return new ModelAndView("webpay_plus_mall/commit", "details", details);
     }
 
-    @RequestMapping(value = "/webpayplusmall-refund-form", method = RequestMethod.GET)
-    public ModelAndView webpayplusRefundForm(HttpServletRequest request) {
-        String refundEndpoint = "/webpayplusmall-refund";
-
-        Map<String, Object> details = new HashMap<>();
-        details.put("refund-endpoint", refundEndpoint);
-        return new ModelAndView("webpayplusmall-refund-form", "details", details);
-    }
-
-    @RequestMapping(value = "/webpayplusmall-refund", method = RequestMethod.POST)
-    public ModelAndView webpayplusRefund(@RequestParam("token_ws") String token,
+    @RequestMapping(value = "/webpay_plus_mall/refund", method = RequestMethod.POST)
+    public ModelAndView refund(@RequestParam("token_ws") String token,
                                          @RequestParam("child_commerce_code") String childCommerceCode,
                                          @RequestParam("child_buy_order") String childBuyOrder,
                                          @RequestParam("amount") double amount) {
 
         Map<String, Object> details = new HashMap<>();
-
-        Map<String, Object> req = new HashMap<>();
-        req.put("token_ws", token);
-        req.put("child_commerce_code", childCommerceCode);
-        req.put("child_buy_order", childBuyOrder);
-        req.put("amount", amount);
-
-        details.put("req", toJson(req));
-
         try {
             final WebpayPlusMallTransactionRefundResponse response = tx.refund(token, childBuyOrder, childCommerceCode, amount);
-
+            details.put("response", response);
             details.put("resp", toJson(response));
         }
-        catch (TransactionRefundException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
-        }
 
-        return new ModelAndView("webpayplusmall-refund", "details", details);
+        return new ModelAndView("webpay_plus_mall/refund", "details", details);
     }
-
-    @RequestMapping(value = "/webpayplusmall-status", method = RequestMethod.POST)
-    public ModelAndView webpayplusDeferredStatus(@RequestParam("token_ws") String token){
+    @RequestMapping(value = "/webpay_plus_mall/status", method = RequestMethod.POST)
+    public ModelAndView status(@RequestParam("token_ws") String token){
         Map<String, Object> details = new HashMap<>();
         details.put("token_ws", token);
 
@@ -179,14 +131,10 @@ public class WebpayPlusMallController extends BaseController {
             final WebpayPlusMallTransactionStatusResponse response = tx.status(token);
             details.put("resp", toJson(response));
         }
-        catch (TransactionStatusException e) {
-            log.error(e.getLocalizedMessage(), e);
+        catch (Exception e) {
+            log.error("ERROR", e);
             details.put("resp", e.getMessage());
         }
-        catch (Exception e) {
-            log.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
-        }
-        return new ModelAndView("webpayplus-status", "details", details);
+        return new ModelAndView("webpay_plus_mall/status", "details", details);
     }
 }

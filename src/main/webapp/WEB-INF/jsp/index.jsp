@@ -1,90 +1,62 @@
 <html>
 
-<head>
-    <title>Ejemplo integraci&oacute;n Webpay Rest</title>
-    <jsp:include page="template/header.jsp" />
-</head>
+<jsp:include page="template/tpl-header.jsp" />
 
 <body class="container">
-    <h1>Ejemplos Webpay</h1>
-    <table class="table">
-        <thead class="table-dark">
-            <tr>
-                <th scope="col">Service</th>
-                <th scope="col">Create</th>
-                <th scope="col">Refund</th>
-                <th scope="col">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Webpay Plus</td>
-                <td><a href="/webpayplus">Crear Transacci&oacute;n</a></td>
-                <td><a href="/webpayplus-refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/webpayplus-status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Webpay Plus Mall</td>
-                <td><a href="/webpayplusmall">Crear Transacci&oacute;n</a></td>
-                <td><a href="/webpayplusmall-refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/webpayplusmall-status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Webpay Plus Captura Diferida</td>
-                <td><a href="/webpayplusdeferred">Crear Transacci&oacute;n</a></td>
-                <td><a href="/webpayplusdeferred-refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/webpayplusdeferred-status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Webpay Plus Mall Mall Deferred</td>
-                <td><a href="/webpayplusmalldeferred">Crear Transacci&oacute;n</a></td>
-                <td><a href="/webpayplusmalldeferred-refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/webpayplusmalldeferred-status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Oneclick Mall</td>
-                <td><a href="/oneclick-mall/start">Comenzar Inscripci&oacute;n</a></td>
-                <td><a href="/oneclick-mall/refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/oneclick-mall/status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Oneclick Mall Deferred Capture</td>
-                <td><a href="/oneclick-mall-deferred/start">Start Inscription</a></td>
-                <td><a href="/oneclick-mall-deferred/refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/oneclick-mall-deferred/status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Transacci&oacute;n Completa</td>
-                <td><a href="/fulltransaction/create">Crear Transacci&oacute;n</a></td>
-                <td><a href="/fulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/fulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Transacci&oacute;n Completa Mall</td>
-                <td><a href="/mallfulltransaction/create">Crear Transacci&oacute;n</a></td>
-                <td><a href="/mallfulltransaction/refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/mallfulltransaction/status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Patpass-webpay</td>
-                <td><a href="/patpass-webpay/create">Crear Transacci&oacute;n</a></td>
-                <td><a href="/patpass-webpay/refund-form">Reembolsar Transacci&oacute;n</a></td>
-                <td><a href="/patpass-webpay/status-form">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Patpass Comercio</td>
-                <td><a href="/patpass-comercio/start">Crear Transacci&oacute;n</a></td>
-                <td><a href="#"></a></td>
-                <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-            <tr>
-                <td>Webpay Plus Modal</td>
-                <td><a href="/modal/webpayplus-modal">Crear Transacci&oacute;n</a></td>
-                <td><a href="#"></a></td>
-                <td><a href="/patpass-comercio/status">Consultar Estado Transacci&oacute;n</a></td>
-            </tr>
-        </tbody>
-    </table>
+
+    <jsp:include page="template/navbar-index.jsp" />
+
+    <div class="row">
+        <div class="col-4">
+            <img class="product" src="/images/wpplus.png">
+        </div>
+        <div class="col-8">
+            <table class="table table-bordered">
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/webpay_plus/create">Webpay Plus</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/webpay_plus_deferred/create">Webpay Plus Diferido</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/webpay_plus_mall/create">Webpay Plus Mall</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/webpay_plus_mall_deferred/create">Webpay Plus Mall Diferido</a></td></tr>
+            </table>
+        </div>
+    </div><br>
+
+    <div class="row">
+        <div class="col-8">
+            <table class="table table-bordered">
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/oneclick_mall/start">Oneclick Mall</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/oneclick_mall_deferred/start">Oneclick Mall Diferido</a></td></tr>
+            </table>
+        </div>
+        <div class="col-4">
+            <img class="product" src="/images/oneclick.png">
+        </div>
+    </div><br>
+
+    <div class="row">
+        <div class="col-4">
+            <img class="product" src="/images/txcompleta.png">
+        </div>
+        <div class="col-8">
+            <table class="table table-bordered">
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/transaccion_completa/form">Transacción Completa</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/transaccion_completa_deferred/form">Transacción Completa Diferido</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/transaccion_completa_mall/form">Transacción Completa Mall</a></td></tr>
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/transaccion_completa_mall_deferred/form">Transacción Completa Mall Diferido</a></td></tr>
+            </table>
+        </div>
+    </div><br>
+
+    <div class="row">
+        <div class="col-8">
+            <table class="table table-bordered">
+                <tr><td><a class="nav-link tbk-link" aria-current="page" href="/patpass_comercio/start">PatPass Comercio</a></td></tr>
+            </table>
+        </div>
+        <div class="col-4">
+            <img class="product" src="/images/patpass.png">
+        </div>
+    </div>
+
     <jsp:include page="template/footer.jsp" />
 </body>
 </html>

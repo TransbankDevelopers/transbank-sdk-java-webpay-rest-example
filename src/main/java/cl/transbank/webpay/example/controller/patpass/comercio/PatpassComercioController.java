@@ -7,10 +7,7 @@ import cl.transbank.patpass.PatpassComercio;
 import cl.transbank.patpass.model.PatpassOptions;
 import cl.transbank.patpass.responses.*;
 import cl.transbank.webpay.example.controller.BaseController;
-import cl.transbank.webpay.example.controller.ErrorController;
-import cl.transbank.webpay.exception.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,124 +15,106 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Random;
-import java.util.logging.Level;
+import java.util.HashMap;
+import java.util.Map;
 
+@Log4j2
 @Controller
-@RequestMapping("/patpass-comercio")
+@RequestMapping(value = "/patpass_comercio")
 public class PatpassComercioController extends BaseController {
-    private static Logger logger = LoggerFactory.getLogger(PatpassComercioController.class);
-
-
     private PatpassComercio.Inscription inscription;
     public PatpassComercioController(){
-        prepareLoger(Level.ALL);
         inscription = new PatpassComercio.Inscription(new PatpassOptions(IntegrationCommerceCodes.PATPASS_COMERCIO, IntegrationApiKeys.PATPASS_COMERCIO, IntegrationType.TEST));
     }
-
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView start(HttpServletRequest request) {
-        logger.info("PatpassComercio.Inscription.start");
+        Map<String, Object> details = new HashMap<>();
 
-       String url = request.getRequestURL().toString().replace("start","end-subscription");
-        String name = "nombre";
-        String firstLastName = "apellido";
-        String secondLastName = "sapellido";
-        String rut = "14140066-5";
-        String serviceId = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-        String finalUrl = request.getRequestURL().toString().replace("start","voucher-generated");
-        String commerceCode = "28299257";
+        String returnUrl = "http://mvargas:8081/patpass_comercio/commit";//request.getRequestURL().toString().replace("start","commit");
+        String name = "Isaac";
+        String lastName = "Newton";
+        String secondLastName = "Gonzales";
+        String rut = "11111111-1";
+        String serviceId = "Service_" + getRandomNumber();
+        String finalUrl = "http://mvargas:8081/patpass_comercio/voucher_return"; //request.getRequestURL().toString().replace("start","voucher_return");
         Double maxAmount = null;
-        String phoneNumber = "123456734";
-        String mobileNumber = "123456723";
-        String patpassName = "nombre del patpass";
-        String personEmail = "alba.cardenas@continuum.cl";
-        String commerceEmail = "alba.cardenas@continuum.cl";
+        String phone = "123456734";
+        String cellPhone = "123456723";
+        String patpassName = "Membresia de cable";
+        String personEmail = "developer@continuum.cl";
+        String commerceEmail = "developer@continuum.cl";
         String address = "huerfanos 101";
         String city = "Santiago";
 
-
-        // clean model
-        cleanModel();
-        addRequest("url", url);
-        addRequest("name", name);
-        addRequest("firstLastName", firstLastName);
-        addRequest("secondLastName", secondLastName);
-        addRequest("rut", rut);
-        addRequest("serviceId", serviceId);
-        addRequest("finalUrl", finalUrl);
-        addRequest("commerceCode", commerceCode);
-        addRequest("maxAmount", maxAmount);
-        addRequest("phoneNumber", phoneNumber);
-        addRequest("mobileNumber", mobileNumber);
-        addRequest("patpassName", patpassName);
-        addRequest("personEmail", personEmail);
-        addRequest("commerceEmail", commerceEmail);
-        addRequest("address", address);
-        addRequest("city", city);
-
         try {
-            // call the SDK
-            final PatpassComercioInscriptionStartResponse response = inscription.start(url,
+            final PatpassComercioInscriptionStartResponse response = inscription.start(
+                    returnUrl,
                     name,
-                    firstLastName,
+                    lastName,
                     secondLastName,
                     rut,
                     serviceId,
                     finalUrl,
                     maxAmount,
-                    phoneNumber,
-                    mobileNumber,
+                    phone,
+                    cellPhone,
                     patpassName,
                     personEmail,
                     commerceEmail,
                     address,
                     city);
-            logger.info(String.format("response : %s", response));
 
-            if (null != response) {
-                // add response to model in order to send it to the view
-                addModel("response", response);
+            details.put("returnUrl", returnUrl);
+            details.put("name", name);
+            details.put("firstLastName", lastName);
+            details.put("secondLastName", secondLastName);
+            details.put("rut", rut);
+            details.put("serviceId", serviceId);
+            details.put("finalUrl", finalUrl);
+            details.put("maxAmount", maxAmount);
+            details.put("phoneNumber", phone);
+            details.put("mobileNumber", cellPhone);
+            details.put("patpassName", patpassName);
+            details.put("personEmail", personEmail);
+            details.put("commerceEmail", commerceEmail);
+            details.put("address", address);
+            details.put("city", city);
 
-
-                // add necesary data to make form works
-                addModel("tbk_token", response.getToken());
-                addModel("url_webpay", response.getUrl());
-            }
-        }  catch (InscriptionStartException | IOException e) {
+            details.put("response", response);
+            details.put("tbk_token", response.getToken());
+            details.put("url_webpay", response.getUrl());
+            details.put("resp", toJson(response));
+        }  catch (Exception e) {
             e.printStackTrace();
+            //log.info("ERROR", e);
+            //details.put("resp", e.getMessage());
         }
 
-        return new ModelAndView("patpasscomercio/patpass-comercio-start-inscription-form", "model", getModel());
+        return new ModelAndView("patpass_comercio/start", "details", details);
     }
-
-    @RequestMapping(value = {"/end-subscription"}, method = RequestMethod.POST)
-    public ModelAndView webpayplusEnd(@RequestParam("j_token") String tokenWs, HttpServletRequest request) {
-        logger.info(String.format("token_ws : %s", tokenWs));
-        addModel("token_ws", tokenWs);
-
-
-        return new ModelAndView("patpasscomercio/patpass-comercio-end-inscription-form", "model", getModel());
-    }
-
-    @RequestMapping(value= "/status", method = RequestMethod.POST)
-    public ModelAndView webpayplusStatus(@RequestParam("tokenComercio") String token){
-        cleanModel();
-        addRequest("token_ws", token);
+    @RequestMapping(value= "/commit", method = RequestMethod.POST)
+    public ModelAndView commit(@RequestParam("j_token") String token){
+        Map<String, Object> details = new HashMap<>();
         try {
             final PatpassComercioTransactionStatusResponse response = inscription.status(token);
-            addModel("response", response);
-            addModel("token", token);
+            details.put("response", response);
+            details.put("token", token);
+            details.put("url_voucher", response.getVoucherUrl());
+            details.put("resp", toJson(response));
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
-            return new ErrorController().error();
+            log.error("ERROR", e);
+            details.put("resp", e.getMessage());
         }
-        return new ModelAndView("patpasscomercio/patpass-comercio-status", "model", getModel());
+        return new ModelAndView("patpass_comercio/commit", "details", details);
     }
 
-    @RequestMapping(value = {"/voucher-generated"}, method = RequestMethod.POST)
-    public ModelAndView voucherGenerated( HttpServletRequest request) {
-        return new ModelAndView("patpasscomercio/patpass-comercio-end-voucher", "model", getModel());
+    @RequestMapping(value = {"/voucher_return"}, method = RequestMethod.POST)
+    public ModelAndView voucherReturn(
+            @RequestParam("j_token") String token,
+            HttpServletRequest request) {
+        Map<String, Object> details = new HashMap<>();
+        details.put("token", token);
+        details.put("url_voucher", "https://pagoautomaticocontarjetasint.transbank.cl/nuevo-ic-rest/tokenVoucherLogin");
+        return new ModelAndView("patpass_comercio/voucher-return", "details", details);
     }
 }

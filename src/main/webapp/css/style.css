@@ -1,0 +1,27 @@
+/* Modify the background color */
+.navbar-tbk {
+    background-color: #880e4f !important;
+}
+/* Modify brand and text color */
+.navbar-tbk .navbar-brand,
+.navbar-tbk .navbar-text {
+    color: #fff !important;
+}
+.navbar-tbk .nav-link {
+    color: #fff !important;
+}
+
+.product {
+  width: 366px;
+  height: auto;
+}
+
+.tbk-link {
+    color: #c2185b !important;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #e91e63 !important;
+    border-color: #e91e63 !important;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}

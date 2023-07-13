@@ -30,13 +30,13 @@ public class PatpassComercioController extends BaseController {
     public ModelAndView start(HttpServletRequest request) {
         Map<String, Object> details = new HashMap<>();
 
-        String returnUrl = "http://mvargas:8081/patpass_comercio/commit";//request.getRequestURL().toString().replace("start","commit");
+        String returnUrl = request.getRequestURL().toString().replace("start","commit");
         String name = "Isaac";
         String lastName = "Newton";
         String secondLastName = "Gonzales";
         String rut = "11111111-1";
         String serviceId = "Service_" + getRandomNumber();
-        String finalUrl = "http://mvargas:8081/patpass_comercio/voucher_return"; //request.getRequestURL().toString().replace("start","voucher_return");
+        String finalUrl = request.getRequestURL().toString().replace("start","voucher_return");
         Double maxAmount = null;
         String phone = "123456734";
         String cellPhone = "123456723";

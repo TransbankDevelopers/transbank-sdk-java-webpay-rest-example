@@ -9,7 +9,6 @@ import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.transaccioncompleta.FullTransaction;
 import cl.transbank.webpay.transaccioncompleta.responses.*;
 
-import cl.transbank.webpay.responses.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

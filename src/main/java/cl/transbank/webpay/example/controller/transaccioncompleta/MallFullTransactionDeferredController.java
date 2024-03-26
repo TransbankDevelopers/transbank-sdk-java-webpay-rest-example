@@ -7,7 +7,6 @@ import cl.transbank.model.MallTransactionCreateDetails;
 import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.transaccioncompleta.MallFullTransaction;
 import cl.transbank.webpay.transaccioncompleta.model.MallTransactionCommitDetails;
-import cl.transbank.webpay.responses.*;
 import cl.transbank.webpay.transaccioncompleta.responses.*;
 import cl.transbank.webpay.example.controller.BaseController;
 import lombok.extern.log4j.Log4j2;
@@ -178,90 +177,6 @@ public class MallFullTransactionDeferredController extends BaseController {
         return new ModelAndView("transaccion_completa_mall_deferred/capture", "details", details);
     }
 
-    @RequestMapping(value = "/increase_amount", method = RequestMethod.POST)
-    public ModelAndView increaseAmount(@RequestParam("token_ws") String tokenWs,
-                                       @RequestParam("child_commerce_code") String childCommerceCode,
-                                       @RequestParam("buy_order") String buyOrder,
-                                       @RequestParam("child_buy_order") String childBuyOrder,
-                                       @RequestParam("authorization_code") String authorizationCode,
-                                       @RequestParam("amount") double amount,
-                                       HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            IncreaseAmountResponse response = tx.increaseAmount(tokenWs, childCommerceCode, childBuyOrder, authorizationCode, amount);
-            addDetailModelDeferred(response, tokenWs, buyOrder, childCommerceCode, childBuyOrder, authorizationCode, response.getTotalAmount(), details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("transaccion_completa_mall_deferred/increase-amount", "details", details);
-    }
-
-    @RequestMapping(value = "/reverse", method = RequestMethod.POST)
-    public ModelAndView reverseAmount(@RequestParam("token_ws") String tokenWs,
-                                      @RequestParam("child_commerce_code") String childCommerceCode,
-                                      @RequestParam("buy_order") String buyOrder,
-                                      @RequestParam("child_buy_order") String childBuyOrder,
-                                      @RequestParam("authorization_code") String authorizationCode,
-                                      @RequestParam("amount") double amount,
-                                      HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            ReversePreAuthorizedAmountResponse response = tx.reversePreAuthorizedAmount(tokenWs, childCommerceCode, childBuyOrder, authorizationCode, amount);
-            addDetailModelDeferred(response, tokenWs, buyOrder, childCommerceCode, childBuyOrder, authorizationCode, response.getTotalAmount(), details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("transaccion_completa_mall_deferred/reverse-amount", "details", details);
-    }
-
-    @RequestMapping(value = "/increase_date", method = RequestMethod.POST)
-    public ModelAndView increaseDate(@RequestParam("token_ws") String tokenWs,
-                                     @RequestParam("child_commerce_code") String childCommerceCode,
-                                     @RequestParam("buy_order") String buyOrder,
-                                     @RequestParam("child_buy_order") String childBuyOrder,
-                                     @RequestParam("authorization_code") String authorizationCode,
-                                     @RequestParam("amount") double amount,
-                                     HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            IncreaseAuthorizationDateResponse response = tx.increaseAuthorizationDate(tokenWs, childCommerceCode, childBuyOrder, authorizationCode);
-            addDetailModelDeferred(response, tokenWs, buyOrder, childCommerceCode, childBuyOrder, authorizationCode, response.getTotalAmount(), details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("transaccion_completa_mall_deferred/increase-date", "details", details);
-    }
-
-    @RequestMapping(value = "/history", method = RequestMethod.POST)
-    public ModelAndView history(@RequestParam("token_ws") String tokenWs,
-                                @RequestParam("child_commerce_code") String childCommerceCode,
-                                @RequestParam("buy_order") String buyOrder,
-                                @RequestParam("child_buy_order") String childBuyOrder,
-                                @RequestParam("authorization_code") String authorizationCode,
-                                @RequestParam("amount") double amount,
-                                HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            List<DeferredCaptureHistoryResponse> response = tx.deferredCaptureHistory(tokenWs, childCommerceCode, childBuyOrder);
-            addDetailModelDeferred(response, tokenWs, buyOrder, childCommerceCode, childBuyOrder, authorizationCode, amount, details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("transaccion_completa_mall_deferred/history", "details", details);
-    }
-
     private void addDetailModelDeferred(Object response, String tokenWs, String buyOrder, String childCommerceCode, String childBuyOrder, String authorizationCode, double amount, Map<String, Object> details){
         details.put("response", response);
         details.put("buy_order", buyOrder);
@@ -271,10 +186,6 @@ public class MallFullTransactionDeferredController extends BaseController {
         details.put("authorization_code", authorizationCode);
         details.put("amount", amount);
         details.put("capture-endpoint", "/transaccion_completa_mall_deferred/capture");
-        details.put("increase-endpoint", "/transaccion_completa_mall_deferred/increase_amount");
-        details.put("increase-date-endpoint", "/transaccion_completa_mall_deferred/increase_date");
-        details.put("reverse-endpoint", "/transaccion_completa_mall_deferred/reverse");
-        details.put("history-endpoint", "/transaccion_completa_mall_deferred/history");
         details.put("resp", toJson(response));
     }
 

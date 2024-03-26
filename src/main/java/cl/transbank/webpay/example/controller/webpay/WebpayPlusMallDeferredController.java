@@ -6,10 +6,6 @@ import cl.transbank.common.IntegrationType;
 import cl.transbank.model.MallTransactionCreateDetails;
 import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.example.controller.BaseController;
-import cl.transbank.webpay.responses.DeferredCaptureHistoryResponse;
-import cl.transbank.webpay.responses.IncreaseAmountResponse;
-import cl.transbank.webpay.responses.IncreaseAuthorizationDateResponse;
-import cl.transbank.webpay.responses.ReversePreAuthorizedAmountResponse;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.responses.*;
 import lombok.extern.log4j.Log4j2;
@@ -158,86 +154,6 @@ public class WebpayPlusMallDeferredController extends BaseController {
         return new ModelAndView("webpay_plus_mall_deferred/capture", "details", details);
     }
 
-    @RequestMapping(value = "/webpay_plus_mall_deferred/increase_amount", method = RequestMethod.POST)
-    public ModelAndView increaseAmount(@RequestParam("token_ws") String tokenWs,
-                                       @RequestParam("child_commerce_code") String childCommerceCode,
-                                       @RequestParam("child_buy_order") String childBuyOrder,
-                                       @RequestParam("authorization_code") String authorizationCode,
-                                       @RequestParam("amount") double amount,
-                                       HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            IncreaseAmountResponse response = tx.increaseAmount(tokenWs, childCommerceCode, childBuyOrder, authorizationCode, amount);
-            addDetailModelDeferred(response, childCommerceCode, tokenWs, childBuyOrder, authorizationCode, amount, details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("webpay_plus_mall_deferred/increase-amount", "details", details);
-    }
-
-    @RequestMapping(value = "/webpay_plus_mall_deferred/reverse", method = RequestMethod.POST)
-    public ModelAndView reverseAmount(@RequestParam("token_ws") String tokenWs,
-                                      @RequestParam("child_commerce_code") String childCommerceCode,
-                                      @RequestParam("child_buy_order") String childBuyOrder,
-                                      @RequestParam("authorization_code") String authorizationCode,
-                                      @RequestParam("amount") double amount,
-                                      HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            ReversePreAuthorizedAmountResponse response = tx.reversePreAuthorizedAmount(tokenWs, childCommerceCode, childBuyOrder, authorizationCode, amount);
-            addDetailModelDeferred(response, childCommerceCode, tokenWs, childBuyOrder, authorizationCode, amount, details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("webpay_plus_deferred/reverse-amount", "details", details);
-    }
-
-    @RequestMapping(value = "/webpay_plus_mall_deferred/increase_date", method = RequestMethod.POST)
-    public ModelAndView increaseDate(@RequestParam("token_ws") String tokenWs,
-                                     @RequestParam("child_commerce_code") String childCommerceCode,
-                                     @RequestParam("child_buy_order") String childBuyOrder,
-                                     @RequestParam("authorization_code") String authorizationCode,
-                                     @RequestParam("amount") double amount,
-                                     HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            IncreaseAuthorizationDateResponse response = tx.increaseAuthorizationDate(tokenWs, childCommerceCode, childBuyOrder, authorizationCode);
-            addDetailModelDeferred(response, childCommerceCode, tokenWs, childBuyOrder, authorizationCode, amount, details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("webpay_plus_mall_deferred/increase-date", "details", details);
-    }
-
-    @RequestMapping(value = "/webpay_plus_mall_deferred/history", method = RequestMethod.POST)
-    public ModelAndView history(@RequestParam("token_ws") String tokenWs,
-                                @RequestParam("child_commerce_code") String childCommerceCode,
-                                @RequestParam("child_buy_order") String childBuyOrder,
-                                @RequestParam("authorization_code") String authorizationCode,
-                                @RequestParam("amount") double amount,
-                                HttpServletRequest request) {
-
-        Map<String, Object> details = new HashMap<>();
-        try {
-            List<DeferredCaptureHistoryResponse> response = tx.deferredCaptureHistory(tokenWs, childCommerceCode, childBuyOrder);
-            addDetailModelDeferred(response, childCommerceCode, tokenWs, childBuyOrder, authorizationCode, amount, details);
-        }
-        catch (Exception e) {
-            log.error("ERROR", e);
-            details.put("resp", e.getMessage());
-        }
-        return new ModelAndView("webpay_plus_mall_deferred/history", "details", details);
-    }
-
     private void addDetailModelDeferred(Object response, String childCommerceCode, String tokenWs, String buyOrder, String authorizationCode, double amount, Map<String, Object> details){
         details.put("response", response);
         details.put("child_commerce_code", childCommerceCode);
@@ -245,11 +161,7 @@ public class WebpayPlusMallDeferredController extends BaseController {
         details.put("token_ws", tokenWs);
         details.put("authorization_code", authorizationCode);
         details.put("amount", amount);
-        details.put("capture-endpoint", "/webpay_plus_mall_deferred/capture");
-        details.put("increase-endpoint", "/webpay_plus_mall_deferred/increase_amount");
-        details.put("increase-date-endpoint", "/webpay_plus_mall_deferred/increase_date");
-        details.put("reverse-endpoint", "/webpay_plus_mall_deferred/reverse");
-        details.put("history-endpoint", "/webpay_plus_mall_deferred/history");
+        details.put("capture-endpoint", "/webpay_plus_mall_deferred/capture");        
         details.put("resp", toJson(response));
     }
 

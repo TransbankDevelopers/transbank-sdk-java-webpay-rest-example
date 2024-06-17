@@ -5,7 +5,7 @@
 <jsp:include page="../template/tpl-header.jsp" />
 
 <body class="container">
-    <jsp:include page="../template/navbar-oneclick.jsp" />
+    <jsp:include page="../template/navbar-webpayplus.jsp" />
 
 <style>
 	.row {

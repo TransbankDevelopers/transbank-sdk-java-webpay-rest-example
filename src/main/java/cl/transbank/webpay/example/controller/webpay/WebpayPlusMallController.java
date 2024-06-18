@@ -64,6 +64,10 @@ public class WebpayPlusMallController extends BaseController {
             details.put("childCommerceCode2", mallTwoCommerceCode);
             details.put("childBuyOrder2", buyOrderMallTwo);
             details.put("amount2", amountMallTwo);
+            String token = response.getToken();
+            request.getSession().setAttribute("TBK_TOKEN", token);
+            request.getSession().setAttribute("buyOrder", buyOrder);
+            request.getSession().setAttribute("sessionId", sessionId);
         }
         catch (Exception e) {
             log.error("ERROR", e);
@@ -74,10 +78,21 @@ public class WebpayPlusMallController extends BaseController {
     }
 
     @RequestMapping(value = "/webpay_plus_mall/commit", method = { RequestMethod.GET, RequestMethod.POST })
-    public ModelAndView commit(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
-        log.info(String.format("token_ws : %s", tokenWs));
+    public ModelAndView commit(HttpServletRequest request) {
 
+        String tokenWs = request.getParameter("token_ws");
         Map<String, Object> details = new HashMap<>();
+
+        if (tokenWs == null) {
+            String token = (String) request.getSession().getAttribute("TBK_TOKEN");
+            String buyOrder = (String) request.getSession().getAttribute("buyOrder");
+            String sessionId = (String) request.getSession().getAttribute("sessionId");
+            details.put("tbkToken", token);
+            details.put("buyOrder", buyOrder);
+            details.put("sessionId", sessionId);
+            return new ModelAndView("webpay_plus_mall/aborted", "details", details);
+        }
+        log.info(String.format("token_ws : %s", tokenWs));
         details.put("token_ws", tokenWs);
 
         try {

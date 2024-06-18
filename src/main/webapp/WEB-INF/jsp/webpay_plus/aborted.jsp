@@ -16,7 +16,7 @@
 <div class="row">
 	<div class="col">
 		 <h2>Compra cancelada por el usuario</h2>
-         <p>Luego de que se anula la compra en el formulario de pago recibirás un POST con lo siguiente:</p>
+         <p>Luego de que se anula la compra en el formulario de pago recibirás un GET con lo siguiente:</p>
 	</div>
 	<div class="row">
                 <div class="col m4">

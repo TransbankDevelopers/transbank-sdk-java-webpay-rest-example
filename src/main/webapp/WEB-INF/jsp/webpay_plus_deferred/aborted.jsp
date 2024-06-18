@@ -16,17 +16,16 @@
 <div class="row">
 	<div class="col">
 		 <h2>Compra cancelada por el usuario</h2>
-         <p>Luego de que se anula la compra en el formulario de pago recibir√°s un GET con lo siguiente:</p>
+         <p>Luego de que se anula la compra en el formulario de pago recibir·s un GET con lo siguiente:</p>
 	</div>
 	<div class="row">
                 <div class="col m4">
                     <pre class="z-depth-2">
                           <code class="language-java">
                             {
-                                 'token_ws': '${details.token_ws}',
-                                 'tbk_token': '${details.tbkToken}',
-                                 'buyOrder': '${details.buyOrder}',
-                                 'sessionId': '${details.sessionId}',
+                                 'TBK_TOKEN': '${details.tbkToken}',
+                                 'TBK_ORDEN_COMPRA': '${details.buyOrder}',
+                                 'TBK_ID_SESION': '${details.sessionId}',
                             }
                         </code>
                     </pre>

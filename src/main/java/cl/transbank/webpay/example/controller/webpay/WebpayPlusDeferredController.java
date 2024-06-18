@@ -46,7 +46,10 @@ public class WebpayPlusDeferredController extends BaseController {
             WebpayPlusTransactionCreateResponse response = tx.create(buyOrder, sessionId, amount, returnUrl);
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
-
+            String token = response.getToken();
+            request.getSession().setAttribute("TBK_TOKEN", token);
+            request.getSession().setAttribute("buyOrder", buyOrder);
+            request.getSession().setAttribute("sessionId", sessionId);
             details.put("resp", toJson(response));
         }
         catch (Exception e) {
@@ -58,9 +61,21 @@ public class WebpayPlusDeferredController extends BaseController {
     }
 
     @RequestMapping(value = {"/webpay_plus_deferred/commit"}, method = { RequestMethod.GET, RequestMethod.POST })
-    public ModelAndView commit(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
-        log.info(String.format("token_ws : %s", tokenWs));
+    public ModelAndView commit(HttpServletRequest request) {
+        String tokenWs = request.getParameter("token_ws");
         Map<String, Object> details = new HashMap<>();
+
+        if (tokenWs == null) {
+            String token = (String) request.getSession().getAttribute("TBK_TOKEN");
+            String buyOrder = (String) request.getSession().getAttribute("buyOrder");
+            String sessionId = (String) request.getSession().getAttribute("sessionId");
+            details.put("tbkToken", token);
+            details.put("buyOrder", buyOrder);
+            details.put("sessionId", sessionId);
+            return new ModelAndView("webpay_plus_deferred/aborted", "details", details);
+        }
+        log.info(String.format("token_ws : %s", tokenWs));
+
         try {
             final WebpayPlusTransactionCommitResponse response = tx.commit(tokenWs);
             log.debug(String.format("response : %s", response));

@@ -72,7 +72,7 @@ public class WebpayPlusDeferredController extends BaseController {
             details.put("tbkToken", token);
             details.put("buyOrder", buyOrder);
             details.put("sessionId", sessionId);
-            return new ModelAndView("webpay_plus/aborted", "details", details);
+            return new ModelAndView("webpay_plus_deferred/aborted", "details", details);
         }
         log.info(String.format("token_ws : %s", tokenWs));
 

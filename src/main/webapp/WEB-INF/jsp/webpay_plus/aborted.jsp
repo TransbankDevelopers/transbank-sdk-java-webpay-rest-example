@@ -23,10 +23,9 @@
                     <pre class="z-depth-2">
                           <code class="language-java">
                             {
-                                 'token_ws': '${details.token_ws}',
-                                 'tbk_token': '${details.tbkToken}',
-                                 'buyOrder': '${details.buyOrder}',
-                                 'sessionId': '${details.sessionId}',
+                                 'TBK_TOKEN': '${details.tbkToken}',
+                                 'TBK_ORDEN_COMPRA': '${details.buyOrder}',
+                                 'TBK_ID_SESION': '${details.sessionId}',
                             }
                         </code>
                     </pre>

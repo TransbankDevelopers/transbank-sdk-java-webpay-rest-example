@@ -82,7 +82,7 @@ public class WebpayPlusMallDeferredController extends BaseController {
         String tokenWs = request.getParameter("token_ws");
         Map<String, Object> details = new HashMap<>();
 
-        if (tokenWs == null) {
+        if (tokenWs == null || tokenWs.isEmpty()) {
             String token = (String) request.getSession().getAttribute("TBK_TOKEN");
             String buyOrder = (String) request.getSession().getAttribute("buyOrder");
             String sessionId = (String) request.getSession().getAttribute("sessionId");

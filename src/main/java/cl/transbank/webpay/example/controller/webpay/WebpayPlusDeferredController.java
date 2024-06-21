@@ -64,11 +64,16 @@ public class WebpayPlusDeferredController extends BaseController {
     public ModelAndView commit(HttpServletRequest request) {
         String tokenWs = request.getParameter("token_ws");
         Map<String, Object> details = new HashMap<>();
-
-        if (tokenWs == null) {
+        String buyOrder = (String) request.getSession().getAttribute("buyOrder");
+        String sessionId = (String) request.getSession().getAttribute("sessionId");
+        boolean isTimeOut = request.getParameter("TBK_TOKEN")==null && tokenWs==null || request.getParameter("TBK_TOKEN").isEmpty() && tokenWs.isEmpty();
+        if(isTimeOut){
+            details.put("buyOrder", buyOrder);
+            details.put("sessionId", sessionId);
+            return new ModelAndView("webpay_plus_deferred/timeout", "details", details);
+        }
+        if (tokenWs == null|| tokenWs.isEmpty()) {
             String token = (String) request.getSession().getAttribute("TBK_TOKEN");
-            String buyOrder = (String) request.getSession().getAttribute("buyOrder");
-            String sessionId = (String) request.getSession().getAttribute("sessionId");
             details.put("tbkToken", token);
             details.put("buyOrder", buyOrder);
             details.put("sessionId", sessionId);

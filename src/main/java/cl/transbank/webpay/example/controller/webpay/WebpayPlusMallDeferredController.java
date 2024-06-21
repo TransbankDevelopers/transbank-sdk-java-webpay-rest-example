@@ -83,7 +83,8 @@ public class WebpayPlusMallDeferredController extends BaseController {
         Map<String, Object> details = new HashMap<>();
         String buyOrder = (String) request.getSession().getAttribute("buyOrder");
         String sessionId = (String) request.getSession().getAttribute("sessionId");
-        if(request.getParameter("TBK_TOKEN")==null && tokenWs==null || request.getParameter("TBK_TOKEN").isEmpty() && tokenWs.isEmpty())
+        boolean isTimeOut = request.getParameter("TBK_TOKEN")==null && tokenWs==null || request.getParameter("TBK_TOKEN").isEmpty() && tokenWs.isEmpty();
+        if(isTimeOut)
         {
             details.put("buyOrder", buyOrder);
 

@@ -84,7 +84,7 @@ public class WebpayPlusMallController extends BaseController {
         Map<String, Object> details = new HashMap<>();
         String buyOrder = (String) request.getSession().getAttribute("buyOrder");
         String sessionId = (String) request.getSession().getAttribute("sessionId");
-        boolean isTimeOut = request.getParameter("TBK_TOKEN")==null && tokenWs==null || request.getParameter("TBK_TOKEN").isEmpty() && tokenWs.isEmpty();
+        boolean isTimeOut = request.getParameter("TBK_TOKEN")==null && tokenWs==null;
         if(isTimeOut){
             details.put("buyOrder", buyOrder);
             details.put("sessionId", sessionId);

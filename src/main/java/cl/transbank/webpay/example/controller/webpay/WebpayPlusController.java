@@ -38,6 +38,7 @@ public class WebpayPlusController extends BaseController {
         String buyOrder = "buyOrder_" + getRandomNumber();
         String sessionId = "sessionId_" + getRandomNumber();
         double amount = 1000;
+
         String returnUrl = request.getRequestURL().toString().replace("create","commit");
 
         Map<String, Object> details = new HashMap<>();
@@ -52,6 +53,10 @@ public class WebpayPlusController extends BaseController {
             details.put("url", response.getUrl());
             details.put("token", response.getToken());
 
+            String token = response.getToken();
+            request.getSession().setAttribute("TBK_TOKEN", token);
+            request.getSession().setAttribute("buyOrder", buyOrder);
+            request.getSession().setAttribute("sessionId", sessionId);
             details.put("resp", toJson(response));
         }
         catch (Exception e) {
@@ -63,12 +68,27 @@ public class WebpayPlusController extends BaseController {
     }
 
     @RequestMapping(value = {"/webpay_plus/commit"}, method = { RequestMethod.GET, RequestMethod.POST })
-    public ModelAndView commit(@RequestParam("token_ws") String tokenWs, HttpServletRequest request) {
-        log.info(String.format("token_ws : %s", tokenWs));
-
+    public ModelAndView commit(HttpServletRequest request) {
+        String tokenWs = request.getParameter("token_ws");
         Map<String, Object> details = new HashMap<>();
+        String buyOrder = (String) request.getSession().getAttribute("buyOrder");
+        String sessionId = (String) request.getSession().getAttribute("sessionId");
+        boolean isTimeOut = request.getParameter("TBK_TOKEN")==null && tokenWs==null || request.getParameter("TBK_TOKEN").isEmpty() && tokenWs.isEmpty();
+        if(isTimeOut)
+        {
+            details.put("buyOrder", buyOrder);
+            details.put("sessionId", sessionId);
+            return new ModelAndView("webpay_plus/timeout", "details", details);
+        }
+        if (tokenWs==null || tokenWs.isEmpty()) {
+            String token = (String) request.getSession().getAttribute("TBK_TOKEN");
+            details.put("tbkToken", token);
+            details.put("buyOrder", buyOrder);
+            details.put("sessionId", sessionId);
+            return new ModelAndView("webpay_plus/aborted", "details", details);
+        }
+        log.info(String.format("token_ws : %s", tokenWs));
         details.put("token_ws", tokenWs);
-
         try {
             final WebpayPlusTransactionCommitResponse response = tx.commit(tokenWs);
             log.debug(String.format("response : %s", response));
@@ -76,7 +96,6 @@ public class WebpayPlusController extends BaseController {
             details.put("response", response);
             details.put("refund-endpoint", "/webpay_plus/refund");
             details.put("status-endpoint", "/webpay_plus/status");
-
             details.put("resp", toJson(response));
         }
         catch (Exception e) {

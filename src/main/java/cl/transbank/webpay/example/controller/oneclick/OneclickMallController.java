@@ -59,7 +59,14 @@ public class OneclickMallController extends BaseController {
     public ModelAndView finish(@RequestParam("TBK_TOKEN") String token) {
         Map<String, Object> details = new HashMap<>();
         try {
+
             final OneclickMallInscriptionFinishResponse response = inscription.finish(token);
+            String tbkUser= response.getTbkUser();
+            String cardNumber = response.getCardNumber();
+            if(tbkUser==null && cardNumber==null)
+            {
+                return new ModelAndView("oneclick_mall/aborted", "details", details);
+            }
             details.put("token", token);
             details.put("response", response);
             details.put("tbk_user", response.getTbkUser());
